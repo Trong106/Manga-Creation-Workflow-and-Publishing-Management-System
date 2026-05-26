@@ -1,9 +1,12 @@
 # Xin chào anh em swp391
 ## Dự án: Manga studio workflow management
 ### Tech stack 
-* BE: Node.js
+* BE: ASP.NET Core framework
 * FE: React.js
-* Tools: Visual studio code
+* Database: SQL Server + Redis
+* UI Design: Antigravity
+* Deployment: Docker
+* Code Management: GitHub
 ### Requirement
 #### 1. Common Functions (Dành cho mọi người dùng)
 Các chức năng cơ bản mà bất kỳ tài khoản nào cũng có quyền thực hiện: 
