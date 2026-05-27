@@ -29,7 +29,7 @@
 - Submit finished pages 
 - View earned payroll 
 #### 4. Tantou Editor
--Track studio progress 
+- Track studio progress 
 - Review manga pages 
 - Annotate edits on pages 
 - Submit chapter for publishing 
@@ -39,6 +39,6 @@
 - Set publish schedule 
 - Input reader votes 
 - View series ranking 
--Cancel low-ranking series 
--View audit logs
+- Cancel low-ranking series 
+- View audit logs
 #### &#169; 2026 Group 7
