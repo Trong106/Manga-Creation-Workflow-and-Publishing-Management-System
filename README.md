@@ -7,6 +7,8 @@
 * UI Design: Antigravity
 * Deployment: Docker
 * Code Management: GitHub
+### Screen-shorts
+![Trang chủ](https://github.com/toan15062005-alt/manga-studio-workflow/blob/main/ScreenShorts/Screenshot%202026-05-27%20074732.png)
 ### Requirement
 #### 1. Common Functions 
 - Log in 
