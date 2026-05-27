@@ -1,5 +1,5 @@
 # Xin chào anh em swp391
-## Dự án: Manga studio workflow management
+## Dự án: Manga Creation Workflow and Publishing Management System
 ### Tech stack 
 * BE: ASP.NET Core framework
 * FE: React.js
@@ -8,15 +8,12 @@
 * Deployment: Docker
 * Code Management: GitHub
 ### Requirement
-#### 1. Common Functions (Dành cho mọi người dùng)
-Các chức năng cơ bản mà bất kỳ tài khoản nào cũng có quyền thực hiện: 
+#### 1. Common Functions 
 - Log in 
 - Log out 
-- Update profile 
 - Manage file versions 
 - Receive system notifications 
-#### 2. Mangaka (Tác giả)
-Đây là người dùng trung tâm của luồng sáng tác (Workflow Management), quản lý trực tiếp bản thảo và trợ lý:
+#### 2. Mangaka
 - Submit new series proposal 
 - Manage series portfolio 
 - Upload manga pages 
@@ -26,23 +23,17 @@ Các chức năng cơ bản mà bất kỳ tài khoản nào cũng có quyền t
 - Track assistant payroll
 - Review and approve pages 
 - Annotate edits on pages 
-- Auto-segment pages (AI) 
-- Auto-colorize pages (AI) 
-- Extract text via OCR (AI) 
-#### 3. Assistant (Trợ lý)
-Nhóm người dùng tập trung vào việc nhận task, xử lý file và nộp thành phẩm:
+#### 3. Assistant
 - View task lists 
 - Download page resources 
 - Submit finished pages 
 - View earned payroll 
-#### 4. Tantou Editor (Biên tập viên)
-Người theo dõi tiến độ thời gian thực và kiểm soát chất lượng nội dung trước khi xuất bản:
+#### 4. Tantou Editor
 -Track studio progress 
 - Review manga pages 
 - Annotate edits on pages 
 - Submit chapter for publishing 
-#### 5. Editorial Board (Hội đồng biên tập)
-Nhóm có quyền lực cao nhất, quản lý luồng xuất bản (Publishing & Rating) và ra quyết định kinh doanh:
+#### 5. Editorial Board
 - Approve new series 
 - Approve chapter publishing 
 - Set publish schedule 
@@ -50,5 +41,4 @@ Nhóm có quyền lực cao nhất, quản lý luồng xuất bản (Publishing 
 - View series ranking 
 -Cancel low-ranking series 
 -View audit logs
-### Connect ss via toan15062005@gmail.com
 #### &#169; 2026 Group 7
