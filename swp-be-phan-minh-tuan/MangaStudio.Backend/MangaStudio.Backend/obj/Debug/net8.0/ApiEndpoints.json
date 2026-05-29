@@ -1,5 +1,21 @@
 [
   {
+    "ContainingType": "MangaStudio.Backend.Controllers.AuthController",
+    "Method": "Login",
+    "RelativePath": "api/auth/login",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "loginDto",
+        "Type": "MangaStudio.Backend.Models.DTOs.LoginRequestDto",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
     "ContainingType": "MangaStudio.Backend.Controllers.MangakaController",
     "Method": "UploadPage",
     "RelativePath": "api/mangaka/chapters/{id}/upload-pages",
