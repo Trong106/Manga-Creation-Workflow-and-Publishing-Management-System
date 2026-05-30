@@ -14,7 +14,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("MangaStudio.Backend")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+19bc7fcc37a3c78a4e9ae6c367ea40dc2fe3ffa2")]
 [assembly: System.Reflection.AssemblyProductAttribute("MangaStudio.Backend")]
 [assembly: System.Reflection.AssemblyTitleAttribute("MangaStudio.Backend")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
