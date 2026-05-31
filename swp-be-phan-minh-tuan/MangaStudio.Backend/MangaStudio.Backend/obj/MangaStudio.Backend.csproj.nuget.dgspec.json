@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Máy tính\\KY 5\\SWP391\\manga-studio-workflow\\swp-be-phan-minh-tuan\\MangaStudio.Backend\\MangaStudio.Backend\\MangaStudio.Backend.csproj": {}
+    "C:\\FPT_Projects\\manga-studio-workflow\\swp-be-phan-minh-tuan\\MangaStudio.Backend\\MangaStudio.Backend\\MangaStudio.Backend.csproj": {}
   },
   "projects": {
-    "C:\\Máy tính\\KY 5\\SWP391\\manga-studio-workflow\\swp-be-phan-minh-tuan\\MangaStudio.Backend\\MangaStudio.Backend\\MangaStudio.Backend.csproj": {
+    "C:\\FPT_Projects\\manga-studio-workflow\\swp-be-phan-minh-tuan\\MangaStudio.Backend\\MangaStudio.Backend\\MangaStudio.Backend.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Máy tính\\KY 5\\SWP391\\manga-studio-workflow\\swp-be-phan-minh-tuan\\MangaStudio.Backend\\MangaStudio.Backend\\MangaStudio.Backend.csproj",
+        "projectUniqueName": "C:\\FPT_Projects\\manga-studio-workflow\\swp-be-phan-minh-tuan\\MangaStudio.Backend\\MangaStudio.Backend\\MangaStudio.Backend.csproj",
         "projectName": "MangaStudio.Backend",
-        "projectPath": "C:\\Máy tính\\KY 5\\SWP391\\manga-studio-workflow\\swp-be-phan-minh-tuan\\MangaStudio.Backend\\MangaStudio.Backend\\MangaStudio.Backend.csproj",
+        "projectPath": "C:\\FPT_Projects\\manga-studio-workflow\\swp-be-phan-minh-tuan\\MangaStudio.Backend\\MangaStudio.Backend\\MangaStudio.Backend.csproj",
         "packagesPath": "C:\\Users\\MSI\\.nuget\\packages\\",
-        "outputPath": "C:\\Máy tính\\KY 5\\SWP391\\manga-studio-workflow\\swp-be-phan-minh-tuan\\MangaStudio.Backend\\MangaStudio.Backend\\obj\\",
+        "outputPath": "C:\\FPT_Projects\\manga-studio-workflow\\swp-be-phan-minh-tuan\\MangaStudio.Backend\\MangaStudio.Backend\\obj\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
           "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"

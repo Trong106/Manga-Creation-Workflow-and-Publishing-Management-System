@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Authorization;
 using MangaStudio.Backend.Services.Interfaces;
 
 namespace MangaStudio.Backend.Controllers;
@@ -8,6 +9,7 @@ namespace MangaStudio.Backend.Controllers;
 /// </summary>
 [ApiController]
 [Route("api/mangaka")] 
+[Authorize] // Bảo vệ toàn bộ API trong Controller này, yêu cầu phải truyền kèm JWT Token hợp lệ
 public class MangakaController : ControllerBase 
 { 
     private readonly IMangakaService _mangakaService; 

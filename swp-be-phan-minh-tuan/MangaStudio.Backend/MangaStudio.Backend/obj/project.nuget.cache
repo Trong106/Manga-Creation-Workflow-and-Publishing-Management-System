@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "NV66+oOpiOQ=",
+  "dgSpecHash": "mkFQx/MoWyU=",
   "success": true,
-  "projectFilePath": "C:\\Máy tính\\KY 5\\SWP391\\manga-studio-workflow\\swp-be-phan-minh-tuan\\MangaStudio.Backend\\MangaStudio.Backend\\MangaStudio.Backend.csproj",
+  "projectFilePath": "C:\\FPT_Projects\\manga-studio-workflow\\swp-be-phan-minh-tuan\\MangaStudio.Backend\\MangaStudio.Backend\\MangaStudio.Backend.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\MSI\\.nuget\\packages\\azure.core\\1.35.0\\azure.core.1.35.0.nupkg.sha512",
     "C:\\Users\\MSI\\.nuget\\packages\\azure.identity\\1.10.3\\azure.identity.1.10.3.nupkg.sha512",
@@ -89,9 +89,9 @@
       "code": "NU1603",
       "level": "Warning",
       "message": "MangaStudio.Backend depends on System.IdentityModel.Tokens.Jwt (>= 8.0.8) but System.IdentityModel.Tokens.Jwt 8.0.8 was not found. System.IdentityModel.Tokens.Jwt 8.1.0 was resolved instead.",
-      "projectPath": "C:\\Máy tính\\KY 5\\SWP391\\manga-studio-workflow\\swp-be-phan-minh-tuan\\MangaStudio.Backend\\MangaStudio.Backend\\MangaStudio.Backend.csproj",
+      "projectPath": "C:\\FPT_Projects\\manga-studio-workflow\\swp-be-phan-minh-tuan\\MangaStudio.Backend\\MangaStudio.Backend\\MangaStudio.Backend.csproj",
       "warningLevel": 1,
-      "filePath": "C:\\Máy tính\\KY 5\\SWP391\\manga-studio-workflow\\swp-be-phan-minh-tuan\\MangaStudio.Backend\\MangaStudio.Backend\\MangaStudio.Backend.csproj",
+      "filePath": "C:\\FPT_Projects\\manga-studio-workflow\\swp-be-phan-minh-tuan\\MangaStudio.Backend\\MangaStudio.Backend\\MangaStudio.Backend.csproj",
       "libraryId": "System.IdentityModel.Tokens.Jwt",
       "targetGraphs": [
         "net8.0"

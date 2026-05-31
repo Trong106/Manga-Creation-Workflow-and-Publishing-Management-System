@@ -1,36 +1,33 @@
 "use client"
 
-import { createContext, useContext, useState, type ReactNode } from "react"
+import { createContext, useContext, useState, useEffect, type ReactNode } from "react"
 import type { User, UserRole } from "@/lib/types"
 
-const mockUsers: Record<UserRole, User> = {
+// Thông tin tài khoản mẫu
+const mockUsers: Record<UserRole, { name: string; email: string; avatar: string; id: string }> = {
   mangaka: {
-    id: "1",
+    id: "11111111-1111-1111-1111-111111111111",
     name: "Yuki Tanaka",
     email: "yuki@mangaflow.com",
     avatar: "yuki",
-    role: "mangaka",
   },
   assistant: {
-    id: "2",
+    id: "22222222-2222-2222-2222-222222222222",
     name: "Kenji Yamamoto",
     email: "kenji@mangaflow.com",
     avatar: "kenji",
-    role: "assistant",
   },
   tantou: {
-    id: "3",
+    id: "33333333-3333-3333-3333-333333333333",
     name: "Sakura Ito",
     email: "sakura@mangaflow.com",
     avatar: "sakura",
-    role: "tantou",
   },
   editorial: {
-    id: "4",
+    id: "44444444-4444-4444-4444-444444444444",
     name: "Takeshi Sato",
     email: "takeshi@mangaflow.com",
     avatar: "takeshi",
-    role: "editorial",
   },
 }
 
@@ -39,14 +36,93 @@ interface AuthContextType {
   role: UserRole
   setRole: (role: UserRole) => void
   isAuthenticated: boolean
+  token: string | null
+  loading: boolean
+  login: (email: string, password: string) => Promise<boolean>
+  logout: () => void
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined)
 
 export function AuthProvider({ children }: { children: ReactNode }) {
-  const [role, setRole] = useState<UserRole>("mangaka")
+  const [role, setRoleState] = useState<UserRole>("mangaka")
+  const [user, setUser] = useState<User | null>(null)
+  const [token, setToken] = useState<string | null>(null)
+  const [loading, setLoading] = useState(true)
 
-  const user = mockUsers[role]
+  // Khôi phục phiên đăng nhập từ LocalStorage
+  useEffect(() => {
+    const savedRole = localStorage.getItem("auth_role") as UserRole | null
+    const savedToken = localStorage.getItem("auth_token")
+    if (savedRole && savedToken) {
+      setRoleState(savedRole)
+      setToken(savedToken)
+      const credential = mockUsers[savedRole]
+      setUser({
+        id: credential.id,
+        name: credential.name,
+        email: credential.email,
+        avatar: credential.avatar,
+        role: savedRole,
+      })
+    }
+    setLoading(false)
+  }, [])
+
+  // Hàm gọi API Đăng nhập thật ở Backend
+  const login = async (email: string, password: string): Promise<boolean> => {
+    setLoading(true)
+    try {
+      const res = await fetch("https://localhost:64111/api/auth/login", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ email, password }),
+      })
+
+      if (res.ok) {
+        const data = await res.json()
+        setToken(data.token)
+        
+        const backendRole = data.role.toLowerCase() as UserRole
+        setRoleState(backendRole)
+        
+        const mockDetail = mockUsers[backendRole] || { avatar: "yuki", id: data.userId }
+        setUser({
+          id: data.userId,
+          name: data.fullName,
+          email: data.email,
+          avatar: mockDetail.avatar,
+          role: backendRole,
+        })
+        
+        localStorage.setItem("auth_role", backendRole)
+        localStorage.setItem("auth_token", data.token)
+        return true
+      }
+      return false
+    } catch (err) {
+      console.error("Lỗi đăng nhập:", err)
+      return false
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  // Đăng xuất và xóa session
+  const logout = () => {
+    setToken(null)
+    setUser(null)
+    localStorage.removeItem("auth_role")
+    localStorage.removeItem("auth_token")
+  }
+
+  // Hỗ trợ đổi nhanh vai trò (Demo Switcher) bằng cách đăng nhập ngầm tài khoản tương ứng
+  const setRole = async (newRole: UserRole) => {
+    const mockUser = mockUsers[newRole]
+    await login(mockUser.email, "Password123")
+  }
 
   return (
     <AuthContext.Provider
@@ -54,7 +130,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         user,
         role,
         setRole,
-        isAuthenticated: true,
+        isAuthenticated: !!token,
+        token,
+        loading,
+        login,
+        logout,
       }}
     >
       {children}

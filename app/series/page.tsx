@@ -1,6 +1,7 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
+import { useAuth } from "@/lib/auth-context"
 import {
   BookOpen,
   Plus,
@@ -136,8 +137,50 @@ const statusConfig = {
 }
 
 export default function SeriesPage() {
-  const [series, setSeries] = useState<Series[]>(seriesData)
+  const { user, token } = useAuth()
+  const [series, setSeries] = useState<Series[]>([])
+  const [loading, setLoading] = useState(true)
   const [isCreateOpen, setIsCreateOpen] = useState(false)
+
+  // Gọi API lấy danh sách truyện thật từ SQL Server database (gửi kèm JWT Token)
+  useEffect(() => {
+    if (user?.id && token) {
+      setLoading(true)
+      fetch(`https://localhost:64111/api/mangaka/series?mangakaId=${user.id}`, {
+        headers: {
+          "Authorization": `Bearer ${token}`
+        }
+      })
+        .then((res) => res.json())
+        .then((data) => {
+          const mapped = data.map((item: any) => {
+            const isDragon = item.title.toLowerCase().includes("dragon")
+            return {
+              id: item.id,
+              title: item.title,
+              titleJp: isDragon ? "竜狩人" : "夜咲く花",
+              genre: isDragon ? "Action / Fantasy" : "Romance / Mystery",
+              status: isDragon ? "ongoing" : "ongoing",
+              chapters: isDragon ? 45 : 1,
+              totalPages: isDragon ? 892 : 20,
+              currentChapter: isDragon ? 46 : 2,
+              progress: isDragon ? 78 : 10,
+              readers: isDragon ? 125000 : 5000,
+              rating: isDragon ? 4.8 : 4.2,
+              coverColor: isDragon ? "from-orange-500/20 to-red-600/20" : "from-pink-500/20 to-purple-600/20",
+              nextDeadline: isDragon ? "2024-01-20" : "2024-01-25",
+              assistants: isDragon ? 3 : 1,
+            }
+          })
+          setSeries(mapped)
+          setLoading(false)
+        })
+        .catch((err) => {
+          console.error("Lỗi lấy danh sách bộ truyện:", err)
+          setLoading(false)
+        })
+    }
+  }, [user?.id, token])
 
   const totalReaders = series.reduce((acc, s) => acc + s.readers, 0)
   const activeSeries = series.filter((s) => s.status === "ongoing").length
@@ -273,103 +316,109 @@ export default function SeriesPage() {
       </div>
 
       {/* Series Grid */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-        {series.map((s) => (
-          <Card
-            key={s.id}
-            className="bg-card/50 border-border/50 hover:border-primary/30 transition-colors"
-          >
-            <CardContent className="p-0">
-              <div className="flex">
-                {/* Cover placeholder */}
-                <div
-                  className={`w-32 h-44 bg-gradient-to-br ${s.coverColor} rounded-l-lg flex items-center justify-center shrink-0`}
-                >
-                  <BookOpen className="w-10 h-10 text-foreground/30" />
-                </div>
-
-                {/* Content */}
-                <div className="flex-1 p-4 flex flex-col">
-                  <div className="flex items-start justify-between">
-                    <div>
-                      <h3 className="font-semibold text-lg">{s.title}</h3>
-                      <p className="text-sm text-muted-foreground">{s.titleJp}</p>
-                    </div>
-                    <DropdownMenu>
-                      <DropdownMenuTrigger asChild>
-                        <Button variant="ghost" size="icon" className="h-8 w-8">
-                          <MoreVertical className="w-4 h-4" />
-                        </Button>
-                      </DropdownMenuTrigger>
-                      <DropdownMenuContent align="end">
-                        <DropdownMenuItem>
-                          <Eye className="w-4 h-4 mr-2" />
-                          View Details
-                        </DropdownMenuItem>
-                        <DropdownMenuItem>
-                          <Edit className="w-4 h-4 mr-2" />
-                          Edit Series
-                        </DropdownMenuItem>
-                        <DropdownMenuSeparator />
-                        <DropdownMenuItem className="text-destructive">
-                          <Trash2 className="w-4 h-4 mr-2" />
-                          Delete
-                        </DropdownMenuItem>
-                      </DropdownMenuContent>
-                    </DropdownMenu>
+      {loading ? (
+        <div className="text-center py-12 text-zinc-400">Đang tải danh sách bộ truyện từ CSDL...</div>
+      ) : series.length === 0 ? (
+        <div className="text-center py-12 text-zinc-400">Không có bộ truyện nào trong cơ sở dữ liệu.</div>
+      ) : (
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+          {series.map((s) => (
+            <Card
+              key={s.id}
+              className="bg-card/50 border-border/50 hover:border-primary/30 transition-colors"
+            >
+              <CardContent className="p-0">
+                <div className="flex">
+                  {/* Cover placeholder */}
+                  <div
+                    className={`w-32 h-44 bg-gradient-to-br ${s.coverColor} rounded-l-lg flex items-center justify-center shrink-0`}
+                  >
+                    <BookOpen className="w-10 h-10 text-foreground/30" />
                   </div>
 
-                  <div className="flex items-center gap-2 mt-2">
-                    <Badge variant="outline" className="text-xs">
-                      {s.genre}
-                    </Badge>
-                    <Badge className={statusConfig[s.status].color}>
-                      {statusConfig[s.status].label}
-                    </Badge>
-                  </div>
-
-                  <div className="mt-auto pt-3 space-y-2">
-                    {s.status === "ongoing" && (
+                  {/* Content */}
+                  <div className="flex-1 p-4 flex flex-col">
+                    <div className="flex items-start justify-between">
                       <div>
-                        <div className="flex items-center justify-between text-xs mb-1">
-                          <span className="text-muted-foreground">
-                            Chapter {s.currentChapter} Progress
-                          </span>
-                          <span className="font-medium">{s.progress}%</span>
-                        </div>
-                        <Progress value={s.progress} className="h-1.5" />
+                        <h3 className="font-semibold text-lg">{s.title}</h3>
+                        <p className="text-sm text-muted-foreground">{s.titleJp}</p>
                       </div>
-                    )}
+                      <DropdownMenu>
+                        <DropdownMenuTrigger asChild>
+                          <Button variant="ghost" size="icon" className="h-8 w-8">
+                            <MoreVertical className="w-4 h-4" />
+                          </Button>
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent align="end">
+                          <DropdownMenuItem>
+                            <Eye className="w-4 h-4 mr-2" />
+                            View Details
+                          </DropdownMenuItem>
+                          <DropdownMenuItem>
+                            <Edit className="w-4 h-4 mr-2" />
+                            Edit Series
+                          </DropdownMenuItem>
+                          <DropdownMenuSeparator />
+                          <DropdownMenuItem className="text-destructive">
+                            <Trash2 className="w-4 h-4 mr-2" />
+                            Delete
+                          </DropdownMenuItem>
+                        </DropdownMenuContent>
+                      </DropdownMenu>
+                    </div>
 
-                    <div className="flex items-center justify-between text-xs text-muted-foreground">
-                      <div className="flex items-center gap-3">
-                        <span className="flex items-center gap-1">
-                          <FileText className="w-3 h-3" />
-                          {s.chapters} ch
-                        </span>
-                        <span className="flex items-center gap-1">
-                          <Eye className="w-3 h-3" />
-                          {(s.readers / 1000).toFixed(0)}K
-                        </span>
-                        <span className="flex items-center gap-1">
-                          <Users className="w-3 h-3" />
-                          {s.assistants}
-                        </span>
-                      </div>
+                    <div className="flex items-center gap-2 mt-2">
+                      <Badge variant="outline" className="text-xs">
+                        {s.genre}
+                      </Badge>
+                      <Badge className={statusConfig[s.status].color}>
+                        {statusConfig[s.status].label}
+                      </Badge>
+                    </div>
+
+                    <div className="mt-auto pt-3 space-y-2">
                       {s.status === "ongoing" && (
-                        <span className="flex items-center gap-1">
-                          <Calendar className="w-3 h-3" />
-                          {s.nextDeadline}
-                        </span>
+                        <div>
+                          <div className="flex items-center justify-between text-xs mb-1">
+                            <span className="text-muted-foreground">
+                              Chapter {s.currentChapter} Progress
+                            </span>
+                            <span className="font-medium">{s.progress}%</span>
+                          </div>
+                          <Progress value={s.progress} className="h-1.5" />
+                        </div>
                       )}
+
+                      <div className="flex items-center justify-between text-xs text-muted-foreground">
+                        <div className="flex items-center gap-3">
+                          <span className="flex items-center gap-1">
+                            <FileText className="w-3 h-3" />
+                            {s.chapters} ch
+                          </span>
+                          <span className="flex items-center gap-1">
+                            <Eye className="w-3 h-3" />
+                            {(s.readers / 1000).toFixed(0)}K
+                          </span>
+                          <span className="flex items-center gap-1">
+                            <Users className="w-3 h-3" />
+                            {s.assistants}
+                          </span>
+                        </div>
+                        {s.status === "ongoing" && (
+                          <span className="flex items-center gap-1">
+                            <Calendar className="w-3 h-3" />
+                            {s.nextDeadline}
+                          </span>
+                        )}
+                      </div>
                     </div>
                   </div>
                 </div>
-              </div>
-            </CardContent>
-          </Card>
-        ))}
-      </div>
+              </CardContent>
+            </Card>
+          ))}
+        </div>
+      )}
     </div>
   )
 }

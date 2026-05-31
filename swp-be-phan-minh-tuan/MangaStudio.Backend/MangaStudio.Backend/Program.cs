@@ -12,6 +12,17 @@ var builder = WebApplication.CreateBuilder(args);
 // Đăng ký Controllers
 builder.Services.AddControllers();
 
+// Cấu hình CORS để cho phép Frontend gọi API
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowAll", policy =>
+    {
+        policy.AllowAnyOrigin()
+              .AllowAnyMethod()
+              .AllowAnyHeader();
+    });
+});
+
 // Cấu hình Swagger Explorer
 builder.Services.AddEndpointsApiExplorer();
 
@@ -92,6 +103,9 @@ app.UseSwaggerUI();
 
 app.UseHttpsRedirection();
 app.UseStaticFiles();
+
+// Kích hoạt CORS (Đặt trước Authentication/Authorization)
+app.UseCors("AllowAll");
 
 // Kích hoạt middleware xác thực (Authentication) - PHẢI ĐẶT TRƯỚC UseAuthorization
 app.UseAuthentication();
