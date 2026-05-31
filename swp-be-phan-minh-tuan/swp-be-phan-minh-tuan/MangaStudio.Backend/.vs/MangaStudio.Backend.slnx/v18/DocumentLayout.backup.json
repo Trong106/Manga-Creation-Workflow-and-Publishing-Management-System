@@ -1,0 +1,311 @@
+{
+  "Version": 1,
+  "WorkspaceRootPath": "C:\\FPT_Projects\\manga-studio-workflow\\swp-be-phan-minh-tuan\\MangaStudio.Backend\\",
+  "Documents": [
+    {
+      "AbsoluteMoniker": "D:0:0:{5DFD1F0D-207D-3B57-DA3A-B2C54870C8A3}|MangaStudio.Backend\\MangaStudio.Backend.csproj|c:\\fpt_projects\\manga-studio-workflow\\swp-be-phan-minh-tuan\\mangastudio.backend\\mangastudio.backend\\data\\appdbcontext.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{5DFD1F0D-207D-3B57-DA3A-B2C54870C8A3}|MangaStudio.Backend\\MangaStudio.Backend.csproj|solutionrelative:mangastudio.backend\\data\\appdbcontext.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{5DFD1F0D-207D-3B57-DA3A-B2C54870C8A3}|MangaStudio.Backend\\MangaStudio.Backend.csproj|c:\\fpt_projects\\manga-studio-workflow\\swp-be-phan-minh-tuan\\mangastudio.backend\\mangastudio.backend\\controllers\\mangakacontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{5DFD1F0D-207D-3B57-DA3A-B2C54870C8A3}|MangaStudio.Backend\\MangaStudio.Backend.csproj|solutionrelative:mangastudio.backend\\controllers\\mangakacontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{5DFD1F0D-207D-3B57-DA3A-B2C54870C8A3}|MangaStudio.Backend\\MangaStudio.Backend.csproj|c:\\fpt_projects\\manga-studio-workflow\\swp-be-phan-minh-tuan\\mangastudio.backend\\mangastudio.backend\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{5DFD1F0D-207D-3B57-DA3A-B2C54870C8A3}|MangaStudio.Backend\\MangaStudio.Backend.csproj|solutionrelative:mangastudio.backend\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{5DFD1F0D-207D-3B57-DA3A-B2C54870C8A3}|MangaStudio.Backend\\MangaStudio.Backend.csproj|c:\\fpt_projects\\manga-studio-workflow\\swp-be-phan-minh-tuan\\mangastudio.backend\\mangastudio.backend\\services\\implementations\\mangakaservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{5DFD1F0D-207D-3B57-DA3A-B2C54870C8A3}|MangaStudio.Backend\\MangaStudio.Backend.csproj|solutionrelative:mangastudio.backend\\services\\implementations\\mangakaservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{5DFD1F0D-207D-3B57-DA3A-B2C54870C8A3}|MangaStudio.Backend\\MangaStudio.Backend.csproj|c:\\fpt_projects\\manga-studio-workflow\\swp-be-phan-minh-tuan\\mangastudio.backend\\mangastudio.backend\\controllers\\authcontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{5DFD1F0D-207D-3B57-DA3A-B2C54870C8A3}|MangaStudio.Backend\\MangaStudio.Backend.csproj|solutionrelative:mangastudio.backend\\controllers\\authcontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{5DFD1F0D-207D-3B57-DA3A-B2C54870C8A3}|MangaStudio.Backend\\MangaStudio.Backend.csproj|c:\\fpt_projects\\manga-studio-workflow\\swp-be-phan-minh-tuan\\mangastudio.backend\\mangastudio.backend\\appsettings.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}",
+      "RelativeMoniker": "D:0:0:{5DFD1F0D-207D-3B57-DA3A-B2C54870C8A3}|MangaStudio.Backend\\MangaStudio.Backend.csproj|solutionrelative:mangastudio.backend\\appsettings.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{5DFD1F0D-207D-3B57-DA3A-B2C54870C8A3}|MangaStudio.Backend\\MangaStudio.Backend.csproj|c:\\fpt_projects\\manga-studio-workflow\\swp-be-phan-minh-tuan\\mangastudio.backend\\mangastudio.backend\\mangastudio.backend.csproj||{FA3CD31E-987B-443A-9B81-186104E8DAC1}|",
+      "RelativeMoniker": "D:0:0:{5DFD1F0D-207D-3B57-DA3A-B2C54870C8A3}|MangaStudio.Backend\\MangaStudio.Backend.csproj|solutionrelative:mangastudio.backend\\mangastudio.backend.csproj||{FA3CD31E-987B-443A-9B81-186104E8DAC1}|"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{5DFD1F0D-207D-3B57-DA3A-B2C54870C8A3}|MangaStudio.Backend\\MangaStudio.Backend.csproj|c:\\fpt_projects\\manga-studio-workflow\\swp-be-phan-minh-tuan\\mangastudio.backend\\mangastudio.backend\\properties\\launchsettings.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}",
+      "RelativeMoniker": "D:0:0:{5DFD1F0D-207D-3B57-DA3A-B2C54870C8A3}|MangaStudio.Backend\\MangaStudio.Backend.csproj|solutionrelative:mangastudio.backend\\properties\\launchsettings.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{5DFD1F0D-207D-3B57-DA3A-B2C54870C8A3}|MangaStudio.Backend\\MangaStudio.Backend.csproj|c:\\fpt_projects\\manga-studio-workflow\\swp-be-phan-minh-tuan\\mangastudio.backend\\mangastudio.backend\\services\\interfaces\\imangakaservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{5DFD1F0D-207D-3B57-DA3A-B2C54870C8A3}|MangaStudio.Backend\\MangaStudio.Backend.csproj|solutionrelative:mangastudio.backend\\services\\interfaces\\imangakaservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{5DFD1F0D-207D-3B57-DA3A-B2C54870C8A3}|MangaStudio.Backend\\MangaStudio.Backend.csproj|c:\\fpt_projects\\manga-studio-workflow\\swp-be-phan-minh-tuan\\mangastudio.backend\\mangastudio.backend\\mangastudio.backend.csproj||{04B8AB82-A572-4FEF-95CE-5222444B6B64}|",
+      "RelativeMoniker": "D:0:0:{5DFD1F0D-207D-3B57-DA3A-B2C54870C8A3}|MangaStudio.Backend\\MangaStudio.Backend.csproj|solutionrelative:mangastudio.backend\\mangastudio.backend.csproj||{04B8AB82-A572-4FEF-95CE-5222444B6B64}|"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{5DFD1F0D-207D-3B57-DA3A-B2C54870C8A3}|MangaStudio.Backend\\MangaStudio.Backend.csproj|c:\\fpt_projects\\manga-studio-workflow\\swp-be-phan-minh-tuan\\mangastudio.backend\\mangastudio.backend\\models\\entities\\user.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{5DFD1F0D-207D-3B57-DA3A-B2C54870C8A3}|MangaStudio.Backend\\MangaStudio.Backend.csproj|solutionrelative:mangastudio.backend\\models\\entities\\user.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{5DFD1F0D-207D-3B57-DA3A-B2C54870C8A3}|MangaStudio.Backend\\MangaStudio.Backend.csproj|c:\\fpt_projects\\manga-studio-workflow\\swp-be-phan-minh-tuan\\mangastudio.backend\\mangastudio.backend\\models\\entities\\role.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{5DFD1F0D-207D-3B57-DA3A-B2C54870C8A3}|MangaStudio.Backend\\MangaStudio.Backend.csproj|solutionrelative:mangastudio.backend\\models\\entities\\role.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{5DFD1F0D-207D-3B57-DA3A-B2C54870C8A3}|MangaStudio.Backend\\MangaStudio.Backend.csproj|c:\\fpt_projects\\manga-studio-workflow\\swp-be-phan-minh-tuan\\mangastudio.backend\\mangastudio.backend\\models\\entities\\mangapage.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{5DFD1F0D-207D-3B57-DA3A-B2C54870C8A3}|MangaStudio.Backend\\MangaStudio.Backend.csproj|solutionrelative:mangastudio.backend\\models\\entities\\mangapage.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{5DFD1F0D-207D-3B57-DA3A-B2C54870C8A3}|MangaStudio.Backend\\MangaStudio.Backend.csproj|c:\\fpt_projects\\manga-studio-workflow\\swp-be-phan-minh-tuan\\mangastudio.backend\\mangastudio.backend\\models\\dtos\\mangaseriesdto.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{5DFD1F0D-207D-3B57-DA3A-B2C54870C8A3}|MangaStudio.Backend\\MangaStudio.Backend.csproj|solutionrelative:mangastudio.backend\\models\\dtos\\mangaseriesdto.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{5DFD1F0D-207D-3B57-DA3A-B2C54870C8A3}|MangaStudio.Backend\\MangaStudio.Backend.csproj|c:\\fpt_projects\\manga-studio-workflow\\swp-be-phan-minh-tuan\\mangastudio.backend\\mangastudio.backend\\models\\entities\\assistantprofile.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{5DFD1F0D-207D-3B57-DA3A-B2C54870C8A3}|MangaStudio.Backend\\MangaStudio.Backend.csproj|solutionrelative:mangastudio.backend\\models\\entities\\assistantprofile.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{5DFD1F0D-207D-3B57-DA3A-B2C54870C8A3}|MangaStudio.Backend\\MangaStudio.Backend.csproj|c:\\fpt_projects\\manga-studio-workflow\\swp-be-phan-minh-tuan\\mangastudio.backend\\mangastudio.backend\\models\\entities\\auditlog.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{5DFD1F0D-207D-3B57-DA3A-B2C54870C8A3}|MangaStudio.Backend\\MangaStudio.Backend.csproj|solutionrelative:mangastudio.backend\\models\\entities\\auditlog.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{5DFD1F0D-207D-3B57-DA3A-B2C54870C8A3}|MangaStudio.Backend\\MangaStudio.Backend.csproj|c:\\fpt_projects\\manga-studio-workflow\\swp-be-phan-minh-tuan\\mangastudio.backend\\mangastudio.backend\\mangastudio.backend.http||{5703B403-55E7-4C63-8C88-A8F52C7A45C5}",
+      "RelativeMoniker": "D:0:0:{5DFD1F0D-207D-3B57-DA3A-B2C54870C8A3}|MangaStudio.Backend\\MangaStudio.Backend.csproj|solutionrelative:mangastudio.backend\\mangastudio.backend.http||{5703B403-55E7-4C63-8C88-A8F52C7A45C5}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{5DFD1F0D-207D-3B57-DA3A-B2C54870C8A3}|MangaStudio.Backend\\MangaStudio.Backend.csproj|c:\\fpt_projects\\manga-studio-workflow\\swp-be-phan-minh-tuan\\mangastudio.backend\\mangastudio.backend\\models\\dtos\\dashboardstatsdto.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{5DFD1F0D-207D-3B57-DA3A-B2C54870C8A3}|MangaStudio.Backend\\MangaStudio.Backend.csproj|solutionrelative:mangastudio.backend\\models\\dtos\\dashboardstatsdto.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    }
+  ],
+  "DocumentGroupContainers": [
+    {
+      "Orientation": 0,
+      "VerticalTabListWidth": 256,
+      "DocumentGroups": [
+        {
+          "DockedWidth": 200,
+          "SelectedChildIndex": 10,
+          "Children": [
+            {
+              "$type": "Document",
+              "DocumentIndex": 2,
+              "Title": "Program.cs",
+              "DocumentMoniker": "C:\\FPT_Projects\\manga-studio-workflow\\swp-be-phan-minh-tuan\\MangaStudio.Backend\\MangaStudio.Backend\\Program.cs",
+              "RelativeDocumentMoniker": "MangaStudio.Backend\\Program.cs",
+              "ToolTip": "C:\\FPT_Projects\\manga-studio-workflow\\swp-be-phan-minh-tuan\\MangaStudio.Backend\\MangaStudio.Backend\\Program.cs",
+              "RelativeToolTip": "MangaStudio.Backend\\Program.cs",
+              "ViewState": "AgIAAAIAAAAAAAAAAAAAABEAAAArAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-05-28T15:02:38.576Z",
+              "IsPinned": true,
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 4,
+              "Title": "AuthController.cs",
+              "DocumentMoniker": "C:\\FPT_Projects\\manga-studio-workflow\\swp-be-phan-minh-tuan\\MangaStudio.Backend\\MangaStudio.Backend\\Controllers\\AuthController.cs",
+              "RelativeDocumentMoniker": "MangaStudio.Backend\\Controllers\\AuthController.cs",
+              "ToolTip": "C:\\FPT_Projects\\manga-studio-workflow\\swp-be-phan-minh-tuan\\MangaStudio.Backend\\MangaStudio.Backend\\Controllers\\AuthController.cs",
+              "RelativeToolTip": "MangaStudio.Backend\\Controllers\\AuthController.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-05-29T04:42:54.746Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 6,
+              "Title": "MangaStudio.Backend.csproj",
+              "DocumentMoniker": "C:\\FPT_Projects\\manga-studio-workflow\\swp-be-phan-minh-tuan\\MangaStudio.Backend\\MangaStudio.Backend\\MangaStudio.Backend.csproj",
+              "RelativeDocumentMoniker": "MangaStudio.Backend\\MangaStudio.Backend.csproj",
+              "ToolTip": "C:\\FPT_Projects\\manga-studio-workflow\\swp-be-phan-minh-tuan\\MangaStudio.Backend\\MangaStudio.Backend\\MangaStudio.Backend.csproj",
+              "RelativeToolTip": "MangaStudio.Backend\\MangaStudio.Backend.csproj",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000758|",
+              "WhenOpened": "2026-05-29T04:38:53.741Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 11,
+              "Title": "Role.cs",
+              "DocumentMoniker": "C:\\FPT_Projects\\manga-studio-workflow\\swp-be-phan-minh-tuan\\MangaStudio.Backend\\MangaStudio.Backend\\Models\\Entities\\Role.cs",
+              "RelativeDocumentMoniker": "MangaStudio.Backend\\Models\\Entities\\Role.cs",
+              "ToolTip": "C:\\FPT_Projects\\manga-studio-workflow\\swp-be-phan-minh-tuan\\MangaStudio.Backend\\MangaStudio.Backend\\Models\\Entities\\Role.cs",
+              "RelativeToolTip": "MangaStudio.Backend\\Models\\Entities\\Role.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAqwAUAAAAVAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-05-29T01:18:17.43Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 3,
+              "Title": "MangakaService.cs",
+              "DocumentMoniker": "C:\\FPT_Projects\\manga-studio-workflow\\swp-be-phan-minh-tuan\\MangaStudio.Backend\\MangaStudio.Backend\\Services\\Implementations\\MangakaService.cs",
+              "RelativeDocumentMoniker": "MangaStudio.Backend\\Services\\Implementations\\MangakaService.cs",
+              "ToolTip": "C:\\FPT_Projects\\manga-studio-workflow\\swp-be-phan-minh-tuan\\MangaStudio.Backend\\MangaStudio.Backend\\Services\\Implementations\\MangakaService.cs",
+              "RelativeToolTip": "MangaStudio.Backend\\Services\\Implementations\\MangakaService.cs",
+              "ViewState": "AgIAAFwAAAAAAAAAAAAIwCkAAAAmAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-05-28T14:46:06.425Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 12,
+              "Title": "MangaPage.cs",
+              "DocumentMoniker": "C:\\FPT_Projects\\manga-studio-workflow\\swp-be-phan-minh-tuan\\MangaStudio.Backend\\MangaStudio.Backend\\Models\\Entities\\MangaPage.cs",
+              "RelativeDocumentMoniker": "MangaStudio.Backend\\Models\\Entities\\MangaPage.cs",
+              "ToolTip": "C:\\FPT_Projects\\manga-studio-workflow\\swp-be-phan-minh-tuan\\MangaStudio.Backend\\MangaStudio.Backend\\Models\\Entities\\MangaPage.cs",
+              "RelativeToolTip": "MangaStudio.Backend\\Models\\Entities\\MangaPage.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAqwAsAAAAPAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-05-29T00:59:55.303Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 10,
+              "Title": "User.cs",
+              "DocumentMoniker": "C:\\FPT_Projects\\manga-studio-workflow\\swp-be-phan-minh-tuan\\MangaStudio.Backend\\MangaStudio.Backend\\Models\\Entities\\User.cs",
+              "RelativeDocumentMoniker": "MangaStudio.Backend\\Models\\Entities\\User.cs",
+              "ToolTip": "C:\\FPT_Projects\\manga-studio-workflow\\swp-be-phan-minh-tuan\\MangaStudio.Backend\\MangaStudio.Backend\\Models\\Entities\\User.cs",
+              "RelativeToolTip": "MangaStudio.Backend\\Models\\Entities\\User.cs",
+              "ViewState": "AgIAAAMAAAAAAAAAAAAqwAcAAAAQAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-05-29T00:56:13.224Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 14,
+              "Title": "AssistantProfile.cs",
+              "DocumentMoniker": "C:\\FPT_Projects\\manga-studio-workflow\\swp-be-phan-minh-tuan\\MangaStudio.Backend\\MangaStudio.Backend\\Models\\Entities\\AssistantProfile.cs",
+              "RelativeDocumentMoniker": "MangaStudio.Backend\\Models\\Entities\\AssistantProfile.cs",
+              "ToolTip": "C:\\FPT_Projects\\manga-studio-workflow\\swp-be-phan-minh-tuan\\MangaStudio.Backend\\MangaStudio.Backend\\Models\\Entities\\AssistantProfile.cs",
+              "RelativeToolTip": "MangaStudio.Backend\\Models\\Entities\\AssistantProfile.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-05-28T16:54:45.088Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 5,
+              "Title": "appsettings.json",
+              "DocumentMoniker": "C:\\FPT_Projects\\manga-studio-workflow\\swp-be-phan-minh-tuan\\MangaStudio.Backend\\MangaStudio.Backend\\appsettings.json",
+              "RelativeDocumentMoniker": "MangaStudio.Backend\\appsettings.json",
+              "ToolTip": "C:\\FPT_Projects\\manga-studio-workflow\\swp-be-phan-minh-tuan\\MangaStudio.Backend\\MangaStudio.Backend\\appsettings.json",
+              "RelativeToolTip": "MangaStudio.Backend\\appsettings.json",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAABEAAAABAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001642|",
+              "WhenOpened": "2026-05-28T15:48:57.117Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 7,
+              "Title": "launchSettings.json",
+              "DocumentMoniker": "C:\\FPT_Projects\\manga-studio-workflow\\swp-be-phan-minh-tuan\\MangaStudio.Backend\\MangaStudio.Backend\\Properties\\launchSettings.json",
+              "RelativeDocumentMoniker": "MangaStudio.Backend\\Properties\\launchSettings.json",
+              "ToolTip": "C:\\FPT_Projects\\manga-studio-workflow\\swp-be-phan-minh-tuan\\MangaStudio.Backend\\MangaStudio.Backend\\Properties\\launchSettings.json",
+              "RelativeToolTip": "MangaStudio.Backend\\Properties\\launchSettings.json",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAwAAAABAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001642|",
+              "WhenOpened": "2026-05-28T16:13:49.867Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 0,
+              "Title": "AppDbContext.cs",
+              "DocumentMoniker": "C:\\FPT_Projects\\manga-studio-workflow\\swp-be-phan-minh-tuan\\MangaStudio.Backend\\MangaStudio.Backend\\Data\\AppDbContext.cs",
+              "RelativeDocumentMoniker": "MangaStudio.Backend\\Data\\AppDbContext.cs",
+              "ToolTip": "C:\\FPT_Projects\\manga-studio-workflow\\swp-be-phan-minh-tuan\\MangaStudio.Backend\\MangaStudio.Backend\\Data\\AppDbContext.cs",
+              "RelativeToolTip": "MangaStudio.Backend\\Data\\AppDbContext.cs",
+              "ViewState": "AgIAAAEAAAAAAAAAAADgvwsAAAABAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-05-28T14:58:21.644Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 13,
+              "Title": "MangaSeriesDto.cs",
+              "DocumentMoniker": "C:\\FPT_Projects\\manga-studio-workflow\\swp-be-phan-minh-tuan\\MangaStudio.Backend\\MangaStudio.Backend\\Models\\DTOs\\MangaSeriesDto.cs",
+              "RelativeDocumentMoniker": "MangaStudio.Backend\\Models\\DTOs\\MangaSeriesDto.cs",
+              "ToolTip": "C:\\FPT_Projects\\manga-studio-workflow\\swp-be-phan-minh-tuan\\MangaStudio.Backend\\MangaStudio.Backend\\Models\\DTOs\\MangaSeriesDto.cs",
+              "RelativeToolTip": "MangaStudio.Backend\\Models\\DTOs\\MangaSeriesDto.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAqwAQAAAASAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-05-28T14:55:33.606Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 15,
+              "Title": "AuditLog.cs",
+              "DocumentMoniker": "C:\\FPT_Projects\\manga-studio-workflow\\swp-be-phan-minh-tuan\\MangaStudio.Backend\\MangaStudio.Backend\\Models\\Entities\\AuditLog.cs",
+              "RelativeDocumentMoniker": "MangaStudio.Backend\\Models\\Entities\\AuditLog.cs",
+              "ToolTip": "C:\\FPT_Projects\\manga-studio-workflow\\swp-be-phan-minh-tuan\\MangaStudio.Backend\\MangaStudio.Backend\\Models\\Entities\\AuditLog.cs",
+              "RelativeToolTip": "MangaStudio.Backend\\Models\\Entities\\AuditLog.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-05-28T16:54:46.897Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 16,
+              "Title": "MangaStudio.Backend.http",
+              "DocumentMoniker": "C:\\FPT_Projects\\manga-studio-workflow\\swp-be-phan-minh-tuan\\MangaStudio.Backend\\MangaStudio.Backend\\MangaStudio.Backend.http",
+              "RelativeDocumentMoniker": "MangaStudio.Backend\\MangaStudio.Backend.http",
+              "ToolTip": "C:\\FPT_Projects\\manga-studio-workflow\\swp-be-phan-minh-tuan\\MangaStudio.Backend\\MangaStudio.Backend\\MangaStudio.Backend.http",
+              "RelativeToolTip": "MangaStudio.Backend\\MangaStudio.Backend.http",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003502|",
+              "WhenOpened": "2026-05-28T16:05:57.872Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 1,
+              "Title": "MangakaController.cs",
+              "DocumentMoniker": "C:\\FPT_Projects\\manga-studio-workflow\\swp-be-phan-minh-tuan\\MangaStudio.Backend\\MangaStudio.Backend\\Controllers\\MangakaController.cs",
+              "RelativeDocumentMoniker": "MangaStudio.Backend\\Controllers\\MangakaController.cs",
+              "ToolTip": "C:\\FPT_Projects\\manga-studio-workflow\\swp-be-phan-minh-tuan\\MangaStudio.Backend\\MangaStudio.Backend\\Controllers\\MangakaController.cs",
+              "RelativeToolTip": "MangaStudio.Backend\\Controllers\\MangakaController.cs",
+              "ViewState": "AgIAACIAAAAAAAAAAAAmwA0AAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-05-28T14:43:00.183Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 9,
+              "Title": "MangaStudio.Backend",
+              "DocumentMoniker": "C:\\FPT_Projects\\manga-studio-workflow\\swp-be-phan-minh-tuan\\MangaStudio.Backend\\MangaStudio.Backend\\MangaStudio.Backend.csproj",
+              "RelativeDocumentMoniker": "MangaStudio.Backend\\MangaStudio.Backend.csproj",
+              "ToolTip": "C:\\FPT_Projects\\manga-studio-workflow\\swp-be-phan-minh-tuan\\MangaStudio.Backend\\MangaStudio.Backend\\MangaStudio.Backend.csproj",
+              "RelativeToolTip": "MangaStudio.Backend\\MangaStudio.Backend.csproj",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000758|",
+              "WhenOpened": "2026-05-29T00:29:30.769Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 17,
+              "Title": "DashboardStatsDto.cs",
+              "DocumentMoniker": "C:\\FPT_Projects\\manga-studio-workflow\\swp-be-phan-minh-tuan\\MangaStudio.Backend\\MangaStudio.Backend\\Models\\DTOs\\DashboardStatsDto.cs",
+              "RelativeDocumentMoniker": "MangaStudio.Backend\\Models\\DTOs\\DashboardStatsDto.cs",
+              "ToolTip": "C:\\FPT_Projects\\manga-studio-workflow\\swp-be-phan-minh-tuan\\MangaStudio.Backend\\MangaStudio.Backend\\Models\\DTOs\\DashboardStatsDto.cs",
+              "RelativeToolTip": "MangaStudio.Backend\\Models\\DTOs\\DashboardStatsDto.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAYAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-05-28T14:54:21.948Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 8,
+              "Title": "IMangakaService.cs",
+              "DocumentMoniker": "C:\\FPT_Projects\\manga-studio-workflow\\swp-be-phan-minh-tuan\\MangaStudio.Backend\\MangaStudio.Backend\\Services\\Interfaces\\IMangakaService.cs",
+              "RelativeDocumentMoniker": "MangaStudio.Backend\\Services\\Interfaces\\IMangakaService.cs",
+              "ToolTip": "C:\\FPT_Projects\\manga-studio-workflow\\swp-be-phan-minh-tuan\\MangaStudio.Backend\\MangaStudio.Backend\\Services\\Interfaces\\IMangakaService.cs",
+              "RelativeToolTip": "MangaStudio.Backend\\Services\\Interfaces\\IMangakaService.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAsAAAABAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-05-28T14:44:13.588Z"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
