@@ -1,5 +1,6 @@
 "use client"
 
+import { useState, useEffect } from "react"
 import { TrendingUp, TrendingDown, BookOpen, Users, Clock, CheckCircle2, DollarSign, FileText } from "lucide-react"
 import { Card, CardContent } from "@/components/ui/card"
 import { useAuth } from "@/lib/auth-context"
@@ -40,8 +41,41 @@ const statsMap = {
 }
 
 export function RoleBasedStats() {
-  const { role } = useAuth()
-  const stats = statsMap[role]
+  const { role, user, token } = useAuth()
+  const [apiStats, setApiStats] = useState<{ totalSeries: number; totalAssistants: number } | null>(null)
+
+  // Gọi API lấy dữ liệu thống kê thật từ database của tác giả (gửi kèm JWT Token để xác thực)
+  useEffect(() => {
+    if (role === "mangaka" && user?.id && token) {
+      fetch(`https://localhost:64111/api/mangaka/dashboard-stats/${user.id}`, {
+        headers: {
+          "Authorization": `Bearer ${token}`
+        }
+      })
+        .then((res) => res.json())
+        .then((data) => {
+          setApiStats(data)
+        })
+        .catch((err) => console.error("Lỗi lấy thống kê từ API:", err))
+    } else {
+      setApiStats(null)
+    }
+  }, [role, user?.id, token])
+
+  let stats = statsMap[role]
+
+  // Nếu vai trò là mangaka và đã gọi xong dữ liệu từ API, cập nhật hiển thị dữ liệu thật từ SQL Server
+  if (role === "mangaka" && apiStats) {
+    stats = mangakaStats.map((s) => {
+      if (s.title === "Active Series") {
+        return { ...s, value: apiStats.totalSeries.toString() }
+      }
+      if (s.title === "Team Members") {
+        return { ...s, value: apiStats.totalAssistants.toString() }
+      }
+      return s
+    })
+  }
 
   return (
     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">

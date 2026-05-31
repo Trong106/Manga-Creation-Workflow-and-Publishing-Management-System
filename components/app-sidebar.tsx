@@ -194,7 +194,7 @@ const roleColors: Record<UserRole, string> = {
 export function AppSidebar() {
   const [collapsed, setCollapsed] = useState(false)
   const pathname = usePathname()
-  const { user, role, setRole } = useAuth()
+  const { user, role, setRole, logout } = useAuth()
 
   const filteredNavItems = navItems.filter((item) => item.roles.includes(role))
 
@@ -351,7 +351,7 @@ export function AppSidebar() {
                       Notifications
                     </DropdownMenuItem>
                     <DropdownMenuSeparator />
-                    <DropdownMenuItem className="text-destructive">
+                    <DropdownMenuItem className="text-destructive cursor-pointer" onClick={logout}>
                       <LogOut className="w-4 h-4 mr-2" />
                       Logout
                     </DropdownMenuItem>

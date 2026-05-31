@@ -2,8 +2,7 @@ import type { Metadata } from 'next'
 import { Geist, Geist_Mono } from 'next/font/google'
 import { Analytics } from '@vercel/analytics/next'
 import { AuthProvider } from '@/lib/auth-context'
-import { AppSidebar } from '@/components/app-sidebar'
-import { TopHeader } from '@/components/top-header'
+import { LayoutWrapper } from '@/components/layout-wrapper'
 import './globals.css'
 
 const _geist = Geist({ subsets: ["latin"] });
@@ -41,17 +40,9 @@ export default function RootLayout({
     <html lang="en" className="bg-background">
       <body className="font-sans antialiased bg-background text-foreground">
         <AuthProvider>
-          <div className="flex min-h-screen">
-            <div className="hidden lg:block">
-              <AppSidebar />
-            </div>
-            <div className="flex-1 lg:ml-64 transition-all duration-300">
-              <TopHeader />
-              <main className="p-6">
-                {children}
-              </main>
-            </div>
-          </div>
+          <LayoutWrapper>
+            {children}
+          </LayoutWrapper>
         </AuthProvider>
         {process.env.NODE_ENV === 'production' && <Analytics />}
       </body>

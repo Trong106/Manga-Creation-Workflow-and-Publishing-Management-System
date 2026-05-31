@@ -1,125 +1,159 @@
-'use client';
+"use client"
 
-import React, { useState } from 'react';
+import { useState } from "react"
+import { useAuth } from "@/lib/auth-context"
+import { useRouter } from "next/navigation"
+import { Mail, Lock, ArrowRight, Sparkles, BookOpen, AlertCircle } from "lucide-react"
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
+import { Button } from "@/components/ui/button"
+import { Input } from "@/components/ui/input"
+import { Label } from "@/components/ui/label"
+import { Badge } from "@/components/ui/badge"
 
-// Định nghĩa danh sách các vai trò (Roles) trong hệ thống MangaFlow
-const ROLES = [
-  { id: 'mangaka', name: '👨‍🎨 Mangaka', desc: 'Tác giả / Quản lý Studio', defaultEmail: 'yuki.tanaka@mangaflow.com' },
-  { id: 'assistant', name: '🥷 Assistant', desc: 'Trợ lý xử lý bản thảo', defaultEmail: 'long.assistant@mangaflow.com' },
-  { id: 'tantou', name: '📝 Tantou Editor', desc: 'Biên tập viên kiểm soát chất lượng', defaultEmail: 'minh.editor@mangaflow.com' },
-  { id: 'editorial', name: '🏛️ Editorial Board', desc: 'Hội đồng duyệt & xuất bản', defaultEmail: 'tuan.board@mangaflow.com' },
-];
+const demoUsers = [
+  { role: "mangaka", name: "Yuki Tanaka (Tác giả)", email: "yuki@mangaflow.com", color: "border-primary text-primary" },
+  { role: "assistant", name: "Kenji Yamamoto (Trợ lý)", email: "kenji@mangaflow.com", color: "border-chart-3 text-chart-3" },
+  { role: "tantou", name: "Sakura Ito (Biên tập viên)", email: "sakura@mangaflow.com", color: "border-chart-2 text-chart-2" },
+  { role: "editorial", name: "Takeshi Sato (Ban biên tập)", email: "takeshi@mangaflow.com", color: "border-chart-5 text-chart-5" },
+]
 
 export default function LoginPage() {
-  const [selectedRole, setSelectedRole] = useState('mangaka');
-  const [email, setEmail] = useState(ROLES[0].defaultEmail);
-  const [password, setPassword] = useState('123456');
+  const { login } = useAuth()
+  const router = useRouter()
+  const [email, setEmail] = useState("")
+  const [password, setPassword] = useState("")
+  const [error, setError] = useState("")
+  const [loading, setLoading] = useState(false)
 
-  // Hàm xử lý khi người dùng bấm đổi Vai trò nhanh
-  const handleRoleChange = (roleId: string, defaultEmail: string) => {
-    setSelectedRole(roleId);
-    setEmail(defaultEmail); // Tự động điền email mẫu để demo cho nhanh
-  };
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault()
+    setError("")
+    setLoading(true)
 
-  const handleLogin = (e: React.FormEvent) => {
-    e.preventDefault();
-    alert(`[Đăng nhập hệ thống]\nVai trò: ${selectedRole.toUpperCase()}\nTài khoản: ${email}`);
-    
-    // Luồng điều hướng demo dựa trên vai trò được chọn
-    if (selectedRole === 'mangaka') {
-      window.location.href = '/'; // Quay về trang chủ dashboard mặc định của Mangaka
+    const success = await login(email, password)
+    if (success) {
+      router.push("/")
     } else {
-      window.location.href = `/${selectedRole}`; // Đi đến các phân hệ tương ứng
+      setError("Email hoặc mật khẩu không chính xác. Vui lòng thử lại.")
+      setLoading(false)
     }
-  };
+  }
+
+  // Hàm điền nhanh thông tin tài khoản mẫu
+  const handleQuickLogin = (demoEmail: string) => {
+    setEmail(demoEmail)
+    setPassword("Password123")
+  }
 
   return (
-    <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '100vh', backgroundColor: '#0f172a', color: '#fff', fontFamily: 'Arial, sans-serif', padding: '20px' }}>
-      <div style={{ background: '#1e293b', padding: '40px', borderRadius: '12px', boxShadow: '0 4px 20px rgba(0,0,0,0.5)', width: '450px' }}>
-        
-        <h2 style={{ textAlign: 'center', marginBottom: '8px', color: '#38bdf8', fontSize: '28px' }}>MangaFlow Portal</h2>
-        <p style={{ textAlign: 'center', color: '#94a3b8', marginBottom: '24px', fontSize: '14px' }}>Hệ thống quản lý quy trình sáng tác và xuất bản truyện tranh</p>
-        
-        {/* LỰA CHỌN NHIỆM VỤ / VAI TRÒ (ROLE SELECTOR) */}
-        <div style={{ marginBottom: '24px' }}>
-          <label style={{ display: 'block', marginBottom: '10px', color: '#94a3b8', fontWeight: 'bold', fontSize: '13px', textTransform: 'uppercase' }}>
-            Chọn phân hệ nhiệm vụ đăng nhập:
-          </label>
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px' }}>
-            {ROLES.map((role) => {
-              const isSelected = selectedRole === role.id;
-              return (
-                <button
-                  key={role.id}
-                  type="button"
-                  onClick={() => handleRoleChange(role.id, role.defaultEmail)}
-                  style={{
-                    padding: '12px 8px',
-                    borderRadius: '6px',
-                    border: isSelected ? '2px solid #38bdf8' : '1px solid #475569',
-                    backgroundColor: isSelected ? '#0369a1' : '#334155',
-                    color: '#fff',
-                    textAlign: 'left',
-                    cursor: 'pointer',
-                    transition: 'all 0.2s',
-                  }}
-                >
-                  <div style={{ fontWeight: 'bold', fontSize: '14px' }}>{role.name}</div>
-                  <div style={{ fontSize: '11px', color: isSelected ? '#e0f2fe' : '#94a3b8', marginTop: '2px' }}>{role.desc}</div>
-                </button>
-              );
-            })}
+    <div className="relative flex min-h-screen w-screen items-center justify-center bg-[#09090b] overflow-hidden px-4">
+      {/* Background Decorative Glowing Orbs */}
+      <div className="absolute top-1/4 left-1/4 w-80 h-80 rounded-full bg-primary/10 blur-[120px] pointer-events-none"></div>
+      <div className="absolute bottom-1/4 right-1/4 w-96 h-96 rounded-full bg-chart-2/10 blur-[150px] pointer-events-none"></div>
+
+      <div className="w-full max-w-[480px] z-10 space-y-6">
+        {/* Logo and Brand */}
+        <div className="flex flex-col items-center justify-center text-center space-y-2">
+          <div className="w-12 h-12 bg-primary rounded-xl flex items-center justify-center shadow-lg shadow-primary/20">
+            <BookOpen className="w-6 h-6 text-primary-foreground" />
           </div>
+          <h2 className="text-3xl font-bold tracking-tight text-white mt-3">MangaFlow</h2>
+          <p className="text-muted-foreground text-sm">Hệ thống quản lý quy trình sản xuất truyện tranh chuyên nghiệp</p>
         </div>
 
-        <hr style={{ border: '0', borderTop: '1px solid #334155', marginBottom: '24px' }} />
+        {/* Login Card */}
+        <Card className="bg-zinc-900/60 border-zinc-800 backdrop-blur-xl shadow-2xl">
+          <CardHeader className="space-y-1">
+            <CardTitle className="text-xl font-semibold text-white">Đăng nhập</CardTitle>
+            <CardDescription className="text-zinc-400">
+              Nhập email và mật khẩu của bạn để truy cập hệ thống
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <form onSubmit={handleSubmit} className="space-y-4">
+              {error && (
+                <div className="flex items-center gap-2 p-3 bg-destructive/15 border border-destructive/25 text-destructive rounded-lg text-sm">
+                  <AlertCircle className="w-4 h-4 shrink-0" />
+                  <span>{error}</span>
+                </div>
+              )}
 
-        {/* FORM ĐĂNG NHẬP THỰC TẾ */}
-        <form onSubmit={handleLogin}>
-          <div style={{ marginBottom: '16px' }}>
-            <label style={{ display: 'block', marginBottom: '8px', fontSize: '14px' }}>Tài khoản hệ thống:</label>
-            <input 
-              type="text" 
-              value={email} 
-              onChange={(e) => setEmail(e.target.value)} 
-              placeholder="Nhập email hoặc username..." 
-              style={{ width: '100%', padding: '12px', borderRadius: '6px', border: '1px solid #475569', backgroundColor: '#0f172a', color: '#fff', boxSizing: 'border-box' }}
-              required 
-            />
-          </div>
+              <div className="space-y-2">
+                <Label htmlFor="email" className="text-zinc-300">Email</Label>
+                <div className="relative">
+                  <Mail className="absolute left-3 top-3 h-4 w-4 text-zinc-500" />
+                  <Input
+                    id="email"
+                    type="email"
+                    placeholder="yuki@mangaflow.com"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    required
+                    className="pl-9 bg-zinc-950/40 border-zinc-800 text-white placeholder-zinc-600 focus-visible:ring-primary"
+                  />
+                </div>
+              </div>
 
-          <div style={{ marginBottom: '24px' }}>
-            <label style={{ display: 'block', marginBottom: '8px', fontSize: '14px' }}>Mật khẩu:</label>
-            <input 
-              type="password" 
-              value={password} 
-              onChange={(e) => setPassword(e.target.value)} 
-              placeholder="Nhập mật khẩu..." 
-              style={{ width: '100%', padding: '12px', borderRadius: '6px', border: '1px solid #475569', backgroundColor: '#0f172a', color: '#fff', boxSizing: 'border-box' }}
-              required 
-            />
-          </div>
+              <div className="space-y-2">
+                <Label htmlFor="password" className="text-zinc-300">Mật khẩu</Label>
+                <div className="relative">
+                  <Lock className="absolute left-3 top-3 h-4 w-4 text-zinc-500" />
+                  <Input
+                    id="password"
+                    type="password"
+                    placeholder="••••••••"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    required
+                    className="pl-9 bg-zinc-950/40 border-zinc-800 text-white placeholder-zinc-600 focus-visible:ring-primary"
+                  />
+                </div>
+              </div>
 
-          <button 
-            type="submit" 
-            style={{ 
-              width: '100%', 
-              padding: '14px', 
-              borderRadius: '6px', 
-              border: 'none', 
-              backgroundColor: '#38bdf8', 
-              color: '#0f172a', 
-              fontWeight: 'bold', 
-              cursor: 'pointer', 
-              fontSize: '16px',
-              boxShadow: '0 4px 6px -1px rgba(56, 189, 248, 0.2)'
-            }}
-          >
-            Vào phân hệ làm việc
-          </button>
-        </form>
+              <Button
+                type="submit"
+                disabled={loading}
+                className="w-full bg-primary text-primary-foreground hover:bg-primary/95 transition-all mt-2"
+              >
+                {loading ? (
+                  <div className="w-5 h-5 border-2 border-primary-foreground border-t-transparent rounded-full animate-spin"></div>
+                ) : (
+                  <>
+                    <span>Đăng nhập hệ thống</span>
+                    <ArrowRight className="w-4 h-4 ml-2" />
+                  </>
+                )}
+              </Button>
+            </form>
 
+            <div className="relative flex py-2 items-center">
+              <div className="flex-grow border-t border-zinc-800"></div>
+              <span className="flex-shrink mx-4 text-xs text-zinc-500 uppercase tracking-widest font-mono">Tài khoản Demo</span>
+              <div className="flex-grow border-t border-zinc-800"></div>
+            </div>
+
+            {/* Quick Demo Login Grid */}
+            <div className="grid grid-cols-1 gap-2">
+              {demoUsers.map((user) => (
+                <button
+                  key={user.email}
+                  type="button"
+                  onClick={() => handleQuickLogin(user.email)}
+                  className="flex items-center justify-between p-2.5 bg-zinc-950/20 hover:bg-zinc-800/40 border border-zinc-800 hover:border-zinc-700 rounded-lg text-left text-xs transition-all group"
+                >
+                  <div className="flex flex-col">
+                    <span className="font-medium text-zinc-300 group-hover:text-white transition-colors">{user.name}</span>
+                    <span className="text-zinc-500">{user.email}</span>
+                  </div>
+                  <Badge variant="outline" className={`text-[10px] uppercase font-mono px-2 py-0.5 ${user.color}`}>
+                    Chọn nhanh
+                  </Badge>
+                </button>
+              ))}
+            </div>
+          </CardContent>
+        </Card>
       </div>
     </div>
-  );
+  )
 }
