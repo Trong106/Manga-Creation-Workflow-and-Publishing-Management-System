@@ -1,28 +1,27 @@
 'use client';
 
-import React from 'react';
+import { useEffect } from 'react';
+import { useAuth } from '@/lib/auth-context';
+import { useRouter } from 'next/navigation';
 
 export default function LogoutPage() {
-  const handleLogout = () => {
-    // 1. Xóa token lưu trong bộ nhớ trình duyệt (localStorage hoặc cookie)
-    localStorage.removeItem('token');
-    alert('Bạn đã đăng xuất thành công khỏi hệ thống MangaFlow!');
+  const { logout } = useAuth();
+  const router = useRouter();
+
+  useEffect(() => {
+    // Gọi hàm logout để làm sạch React State và localStorage
+    logout();
     
-    // 2. Chuyển hướng người dùng quay trở lại trang đăng nhập
-    window.location.href = '/login';
-  };
+    // Chuyển hướng người dùng về trang đăng nhập
+    router.push('/login');
+  }, [logout, router]);
 
   return (
-    <div style={{ padding: '40px', fontFamily: 'Arial, sans-serif', textAlign: 'center', backgroundColor: '#0f172a', minHeight: '100vh', color: '#fff' }}>
-      <h1>Cấu hình Đăng xuất Hệ thống</h1>
-      <p style={{ color: '#94a3b8', marginBottom: '20px' }}>Bấm nút bên dưới để thử nghiệm luồng xóa dữ liệu phiên làm việc.</p>
-      
-      <button 
-        onClick={handleLogout} 
-        style={{ padding: '12px 24px', backgroundColor: '#ef4444', color: '#fff', border: 'none', borderRadius: '4px', fontWeight: 'bold', cursor: 'pointer', fontSize: '16px' }}
-      >
-        Xác nhận Đăng xuất (Logout)
-      </button>
+    <div className="flex h-screen w-screen items-center justify-center bg-[#09090b] text-white">
+      <div className="flex flex-col items-center gap-4">
+        <div className="w-12 h-12 border-4 border-primary border-t-transparent rounded-full animate-spin"></div>
+        <p className="text-muted-foreground text-sm font-medium animate-pulse">Đang đăng xuất khỏi hệ thống MangaFlow...</p>
+      </div>
     </div>
   );
 }

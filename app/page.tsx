@@ -1,7 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
-import { AppSidebar as Sidebar } from "@/components/app-sidebar";
+import { useAuth } from "@/lib/auth-context";
 import { StatsCards as MetricCard } from "@/components/manga/stats-cards";
 import { TeamActivity as RecentActivity } from "@/components/manga/team-activity";
 import { WorkflowBoard as QuickActions } from "@/components/manga/workflow-board";
@@ -48,76 +47,57 @@ const ROLE_INFO: Record<string, { name: string; desc: string; metrics: { title: 
 };
 
 export default function Dashboard() {
-  const [role, setRole] = useState<string | null>(null);
-
-  useEffect(() => {
-    // 1. Đọc vai trò đã chọn từ trang Login lưu trong localStorage
-    const savedRole = localStorage.getItem('userRole') || 'mangaka';
-    setRole(savedRole);
-  }, []);
-
-  // Hàm Đăng xuất nhanh để test luồng
-  const handleLogout = () => {
-    localStorage.clear();
-    window.location.href = '/login';
-  };
+  const { role, user } = useAuth();
 
   // Đang đợi đọc bộ nhớ máy
-  if (!role) return <div className="flex h-screen bg-[#050507] text-white items-center justify-center">Loading system...</div>;
+  if (!role) {
+    return (
+      <div className="flex items-center justify-center min-h-[400px]">
+        <div className="w-8 h-8 border-4 border-primary border-t-transparent rounded-full animate-spin"></div>
+      </div>
+    );
+  }
 
   const currentRole = ROLE_INFO[role] || ROLE_INFO['mangaka'];
+  const displayName = user?.name || currentRole.name;
 
   return (
-    <div className="flex h-screen bg-[#050507] text-white overflow-hidden">
-      {/* Sidebar điều hướng bên trái */}
-      <Sidebar />
-
-      {/* Khu vực nội dung chính của Dashboard */}
-      <main className="flex-1 overflow-y-auto p-8">
-        {/* Header góc trên */}
-        <div className="flex justify-between items-center mb-8">
-          <div>
-            <h1 className="text-3xl font-bold tracking-tight">Studio Dashboard</h1>
-            <p className="text-sm text-purple-400 mt-1">Welcome back, {currentRole.name} — <span className="text-gray-400 text-xs italic">{currentRole.desc}</span></p>
-          </div>
-          <div className="flex items-center gap-4">
-            <button 
-              onClick={handleLogout}
-              className="px-4 py-2 bg-red-950 border border-red-800 rounded-lg text-sm font-medium text-red-200 hover:bg-red-900 transition"
-            >
-              🚪 Logout
-            </button>
-            <div className="w-10 h-10 rounded-full bg-purple-600 flex items-center justify-center font-bold text-sm">
-              {role.substring(0, 2).toUpperCase()}
-            </div>
-          </div>
+    <div className="space-y-6">
+      {/* Header góc trên */}
+      <div className="flex justify-between items-center mb-2">
+        <div>
+          <h1 className="text-3xl font-bold tracking-tight text-white">Studio Dashboard</h1>
+          <p className="text-sm text-purple-400 mt-1">
+            Welcome back, <span className="font-semibold text-white">{displayName}</span> —{" "}
+            <span className="text-gray-400 text-xs italic">{currentRole.desc}</span>
+          </p>
         </div>
+      </div>
 
-        {/* Khối danh sách các bộ truyện đang xử lý (Chỉ Mangaka và Editor cần xem cái này) */}
-        {(role === 'mangaka' || role === 'tantou' || role === 'editorial') && (
-          <div className="mb-8">
-            <h2 className="text-xl font-semibold mb-4">Active Series Portfolio</h2>
-            <MangaCarousel />
-          </div>
-        )}
-
-        {/* Bộ các chỉ số thống kê (Biến đổi động 100% theo vai trò được truyền từ Login) */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-          {currentRole.metrics.map((m, idx) => (
-            <MetricCard key={idx} title={m.title} value={m.val} change={m.change} icon={m.icon} />
-          ))}
+      {/* Khối danh sách các bộ truyện đang xử lý (Chỉ Mangaka và Editor cần xem cái này) */}
+      {(role === 'mangaka' || role === 'tantou' || role === 'editorial') && (
+        <div className="space-y-4">
+          <h2 className="text-xl font-semibold text-white">Active Series Portfolio</h2>
+          <MangaCarousel />
         </div>
+      )}
 
-        {/* Bố cục chia đôi bên dưới: Luồng hoạt động & Thao tác nhanh */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-          <div className="lg:col-span-2">
-            <RecentActivity />
-          </div>
-          <div>
-            <QuickActions />
-          </div>
+      {/* Bộ các chỉ số thống kê (Biến đổi động 100% theo vai trò được truyền từ Login) */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        {currentRole.metrics.map((m, idx) => (
+          <MetricCard key={idx} title={m.title} value={m.val} change={m.change} icon={m.icon} />
+        ))}
+      </div>
+
+      {/* Bố cục chia đôi bên dưới: Luồng hoạt động & Thao tác nhanh */}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        <div className="lg:col-span-2">
+          <RecentActivity />
         </div>
-      </main>
+        <div>
+          <QuickActions />
+        </div>
+      </div>
     </div>
   );
 }
