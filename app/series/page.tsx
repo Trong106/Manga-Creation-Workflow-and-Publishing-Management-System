@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react"
 import { useAuth } from "@/lib/auth-context"
+import { API_BASE_URL } from "@/lib/api-config"
 import {
   BookOpen,
   Plus,
@@ -146,7 +147,7 @@ export default function SeriesPage() {
   useEffect(() => {
     if (user?.id && token) {
       setLoading(true)
-      fetch(`https://localhost:64111/api/mangaka/series?mangakaId=${user.id}`, {
+      fetch(`${API_BASE_URL}/api/mangaka/series?mangakaId=${user.id}`, {
         headers: {
           "Authorization": `Bearer ${token}`
         }

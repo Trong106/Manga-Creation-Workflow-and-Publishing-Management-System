@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { Progress } from "@/components/ui/progress"
 import { useAuth } from "@/lib/auth-context"
+import { API_BASE_URL } from "@/lib/api-config"
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -30,7 +31,7 @@ export function MangakaSeries() {
   // Gọi API lấy danh sách truyện thật từ SQL Server database (gửi kèm JWT Token để xác thực)
   useEffect(() => {
     if (user?.id && token) {
-      fetch(`https://localhost:64111/api/mangaka/series?mangakaId=${user.id}`, {
+      fetch(`${API_BASE_URL}/api/mangaka/series?mangakaId=${user.id}`, {
         headers: {
           "Authorization": `Bearer ${token}`
         }
@@ -105,7 +106,7 @@ export function MangakaSeries() {
                     </Badge>
                   </div>
                   <div className="flex flex-wrap gap-1 mb-2">
-                    {series.genre.map((g) => (
+                    {series.genre.map((g: string) => (
                       <Badge key={g} variant="outline" className="text-xs">
                         {g}
                       </Badge>

@@ -50,11 +50,11 @@ public class AuthService : IAuthService
 
         // 2. Xác thực mật khẩu
         // Vì trong database mẫu (seeding), cột PasswordHash đang là NULL
-        // Ta sẽ tự động gán mật khẩu mặc định là "Password123" cho các tài khoản này ở lần đăng nhập đầu tiên.
+        // Ta sẽ tự động gán mật khẩu mặc định là "123456" cho các tài khoản này ở lần đăng nhập đầu tiên.
         if (string.IsNullOrEmpty(user.PasswordHash))
         {
             // Nếu người dùng nhập đúng mật khẩu mặc định dùng thử
-            if (loginDto.Password == "Password123")
+            if (loginDto.Password == "123456")
             {
                 // Băm mật khẩu và cập nhật vào database để những lần sau xác thực an toàn
                 user.PasswordHash = _passwordHasher.HashPassword(user, loginDto.Password);

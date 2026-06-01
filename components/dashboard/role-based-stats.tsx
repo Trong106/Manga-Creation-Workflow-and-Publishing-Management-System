@@ -4,6 +4,7 @@ import { useState, useEffect } from "react"
 import { TrendingUp, TrendingDown, BookOpen, Users, Clock, CheckCircle2, DollarSign, FileText } from "lucide-react"
 import { Card, CardContent } from "@/components/ui/card"
 import { useAuth } from "@/lib/auth-context"
+import { API_BASE_URL } from "@/lib/api-config"
 
 const mangakaStats = [
   { title: "Active Series", value: "3", change: "+1", trend: "up", icon: BookOpen },
@@ -47,7 +48,7 @@ export function RoleBasedStats() {
   // Gọi API lấy dữ liệu thống kê thật từ database của tác giả (gửi kèm JWT Token để xác thực)
   useEffect(() => {
     if (role === "mangaka" && user?.id && token) {
-      fetch(`https://localhost:64111/api/mangaka/dashboard-stats/${user.id}`, {
+      fetch(`${API_BASE_URL}/api/mangaka/dashboard-stats/${user.id}`, {
         headers: {
           "Authorization": `Bearer ${token}`
         }

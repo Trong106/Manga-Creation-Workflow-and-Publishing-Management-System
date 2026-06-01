@@ -3,6 +3,8 @@
 import { createContext, useContext, useState, useEffect, type ReactNode } from "react"
 import type { User, UserRole } from "@/lib/types"
 
+import { API_BASE_URL } from "@/lib/api-config"
+
 // Thông tin tài khoản mẫu
 const mockUsers: Record<UserRole, { name: string; email: string; avatar: string; id: string }> = {
   mangaka: {
@@ -73,7 +75,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const login = async (email: string, password: string): Promise<boolean> => {
     setLoading(true)
     try {
-      const res = await fetch("https://localhost:64111/api/auth/login", {
+      const res = await fetch(`${API_BASE_URL}/api/auth/login`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -121,7 +123,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   // Hỗ trợ đổi nhanh vai trò (Demo Switcher) bằng cách đăng nhập ngầm tài khoản tương ứng
   const setRole = async (newRole: UserRole) => {
     const mockUser = mockUsers[newRole]
-    await login(mockUser.email, "Password123")
+    await login(mockUser.email, "123456")
   }
 
   return (
