@@ -101,7 +101,11 @@ var app = builder.Build();
 app.UseSwagger();
 app.UseSwaggerUI();
 
-app.UseHttpsRedirection();
+// Chỉ chuyển hướng HTTPS khi không ở môi trường Development để chạy thử local dễ dàng
+if (!app.Environment.IsDevelopment())
+{
+    app.UseHttpsRedirection();
+}
 app.UseStaticFiles();
 
 // Kích hoạt CORS (Đặt trước Authentication/Authorization)

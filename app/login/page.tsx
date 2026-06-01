@@ -42,7 +42,7 @@ export default function LoginPage() {
   // Hàm điền nhanh thông tin tài khoản mẫu
   const handleQuickLogin = (demoEmail: string) => {
     setEmail(demoEmail)
-    setPassword("Password123")
+    setPassword("123456")
   }
 
   return (

@@ -161,3 +161,16 @@ dist
 .ionide
 
 # End of https://www.toptal.com/developers/gitignore/api/visualstudiocode,node
+
+### .NET Backend (swp-be) ###
+[Bb]in/
+[Oo]bj/
+.vs/
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+
+# App uploads
+swp-be/MangaStudio.Backend/Uploads/*
+!swp-be/MangaStudio.Backend/Uploads/.gitkeep

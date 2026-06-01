@@ -9,6 +9,7 @@ import { Label } from "@/components/ui/label"
 import { Badge } from "@/components/ui/badge"
 import { Progress } from "@/components/ui/progress"
 import { useAuth } from "@/lib/auth-context"
+import { API_BASE_URL } from "@/lib/api-config"
 import {
   Select,
   SelectContent,
@@ -45,7 +46,7 @@ export default function UploadPage() {
   // Lấy danh sách bộ truyện thật từ database (gửi kèm JWT Token để xác thực)
   useEffect(() => {
     if (user?.id && token) {
-      fetch(`https://localhost:64111/api/mangaka/series?mangakaId=${user.id}`, {
+      fetch(`${API_BASE_URL}/api/mangaka/series?mangakaId=${user.id}`, {
         headers: {
           "Authorization": `Bearer ${token}`
         }
@@ -87,7 +88,7 @@ export default function UploadPage() {
     formData.append("file", file)
 
     try {
-      const response = await fetch(`https://localhost:64111/api/mangaka/chapters/${chapterId}/upload-pages`, {
+      const response = await fetch(`${API_BASE_URL}/api/mangaka/chapters/${chapterId}/upload-pages`, {
         method: "POST",
         headers: {
           "Authorization": `Bearer ${token}`
@@ -105,7 +106,7 @@ export default function UploadPage() {
       setUploadedFiles((prev) =>
         prev.map((f) =>
           f.id === fileId
-            ? { ...f, status: "complete", progress: 100, preview: `https://localhost:64111${fileUrl}` }
+            ? { ...f, status: "complete", progress: 100, preview: `${API_BASE_URL}${fileUrl}` }
             : f
         )
       )
