@@ -236,37 +236,6 @@ export function AppSidebar() {
             </Button>
           </div>
 
-          {/* Role Switcher (Demo) */}
-          {!collapsed && (
-            <div className="p-4 border-b border-sidebar-border">
-              <p className="text-xs text-muted-foreground mb-2">Demo: Switch Role</p>
-              <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                  <Button variant="outline" className="w-full justify-between">
-                    <span className="flex items-center gap-2">
-                      <Badge className={cn("text-xs", roleColors[role])}>
-                        {roleLabels[role]}
-                      </Badge>
-                    </span>
-                    <ChevronDown className="w-4 h-4" />
-                  </Button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent align="start" className="w-56">
-                  <DropdownMenuLabel>Select Role</DropdownMenuLabel>
-                  <DropdownMenuSeparator />
-                  {(Object.keys(roleLabels) as UserRole[]).map((r) => (
-                    <DropdownMenuItem key={r} onClick={() => setRole(r)}>
-                      <Badge className={cn("mr-2", roleColors[r])}>
-                        {roleLabels[r]}
-                      </Badge>
-                      {r === role && <CheckCircle className="w-4 h-4 ml-auto text-primary" />}
-                    </DropdownMenuItem>
-                  ))}
-                </DropdownMenuContent>
-              </DropdownMenu>
-            </div>
-          )}
-
           {/* Navigation */}
           <nav className="flex-1 overflow-y-auto p-2">
             <ul className="space-y-1">
