@@ -11,7 +11,7 @@ import { API_BASE_URL } from "@/lib/api-config"
 
 // Removed hardcoded mock projects array in favor of dynamic backend database mapping.
 
-const statusColors = {
+const statusColors: Record<string, string> = {
   ongoing: "bg-blue-500/20 text-blue-400",
   completed: "bg-green-500/20 text-green-400",
   planning: "bg-yellow-500/20 text-yellow-400",
@@ -77,7 +77,7 @@ export function ProjectList() {
                 <div className="flex items-center">
                   <Users className="w-4 h-4 text-muted-foreground mr-2" />
                   <div className="flex -space-x-2">
-                    {project.team.slice(0, 3).map((member) => (
+                    {project.team.slice(0, 3).map((member: string) => (
                       <Avatar key={member} className="w-6 h-6 border-2 border-card">
                         <AvatarImage src={`https://api.dicebear.com/7.x/notionists/svg?seed=${member}`} />
                         <AvatarFallback>{member[0].toUpperCase()}</AvatarFallback>
