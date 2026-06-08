@@ -8,7 +8,7 @@
 * Deployment: Docker
 * Code Management: GitHub
 ### Screen-shorts
-![Trang chủ](https://github.com/Trong106/Manga-Creation-Workflow-and-Publishing-Management-System/Back-end/MangaStudio.Backend/Uploads/Screenshot%202026-06-08%20114415.png)
+![Trang chủ](Back-end/MangaStudio.Backend/Uploads/Screenshot%202026-06-08%20114415.png)
 ### Requirement
 #### 1. Common Functions 
 - Log in 

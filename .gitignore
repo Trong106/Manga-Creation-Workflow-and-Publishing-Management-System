@@ -162,7 +162,7 @@ dist
 
 # End of https://www.toptal.com/developers/gitignore/api/visualstudiocode,node
 
-### .NET Backend (swp-be) ###
+### .NET Backend (Back-end) ###
 [Bb]in/
 [Oo]bj/
 .vs/
@@ -172,5 +172,5 @@ dist
 *.sln.docstates
 
 # App uploads
-swp-be/MangaStudio.Backend/Uploads/*
-!swp-be/MangaStudio.Backend/Uploads/.gitkeep
+Back-end/MangaStudio.Backend/Uploads/*
+!Back-end/MangaStudio.Backend/Uploads/.gitkeep
