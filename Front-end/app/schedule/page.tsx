@@ -36,6 +36,7 @@ interface ScheduledItem {
   chapter: number
   status: "scheduled" | "published" | "cancelled"
   time?: string
+  day?: number
 }
 
 interface DaySchedule {
