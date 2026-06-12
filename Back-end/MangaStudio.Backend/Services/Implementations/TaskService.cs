@@ -333,7 +333,7 @@ public class TaskService : ITaskService
                 FullName = u.FullName,
                 Specialty = u.AssistantProfile != null ? u.AssistantProfile.Specialty : null,
                 HourlyRate = u.AssistantProfile != null ? u.AssistantProfile.HourlyRate : 0,
-                Rating = u.AssistantProfile != null ? (decimal)u.AssistantProfile.Rating : 0
+                Rating = u.AssistantProfile != null ? (u.AssistantProfile.Rating ?? 0m) : 0m
             })
             .ToListAsync();
     }

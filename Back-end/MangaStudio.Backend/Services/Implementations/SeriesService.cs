@@ -122,6 +122,7 @@ public class SeriesService : ISeriesService
         if (dto.TitleJp != null) series.TitleJp = dto.TitleJp;
         if (dto.Synopsis != null) series.Synopsis = dto.Synopsis;
         if (dto.Status != null) series.Status = dto.Status;
+        if (dto.CoverImageUrl != null) series.CoverImageUrl = dto.CoverImageUrl;
 
         if (dto.Genres != null)
         {

@@ -7,6 +7,7 @@ import { Badge } from "@/components/ui/badge"
 import { Progress } from "@/components/ui/progress"
 import { API_BASE_URL } from "@/lib/api-config"
 import { WorkflowBoard } from "@/components/manga/workflow-board"
+import { SeriesDetailModal } from "@/components/manga/series-detail-modal"
 
 interface SeriesProgress {
   id: string
@@ -20,17 +21,22 @@ interface SeriesProgress {
 }
 
 const statusColors: Record<string, string> = {
+  active: "bg-success/20 text-success border-success/30",
   ongoing: "bg-success/20 text-success border-success/30",
   completed: "bg-primary/20 text-primary border-primary/30",
   planning: "bg-warning/20 text-warning border-warning/30",
+  proposal: "bg-warning/20 text-warning border-warning/30",
 }
 
 export default function ProgressPage() {
   const [seriesList, setSeriesList] = useState<SeriesProgress[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
+  
+  const [selectedSeriesId, setSelectedSeriesId] = useState<string | null>(null)
+  const [isModalOpen, setIsModalOpen] = useState(false)
 
-  useEffect(() => {
+  const fetchSeriesData = () => {
     fetch(`${API_BASE_URL}/api/data/series`)
       .then((res) => {
         if (!res.ok) throw new Error("Failed to load series progress data")
@@ -47,7 +53,16 @@ export default function ProgressPage() {
         setError(err.message)
         setLoading(false)
       })
+  }
+
+  useEffect(() => {
+    fetchSeriesData()
   }, [])
+
+  const handleCardClick = (id: string) => {
+    setSelectedSeriesId(id)
+    setIsModalOpen(true)
+  }
 
   return (
     <div className="space-y-8">
@@ -87,7 +102,11 @@ export default function ProgressPage() {
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
             {seriesList.map((series) => (
-              <Card key={series.id} className="bg-card border-border hover:border-primary/30 transition-colors">
+              <Card
+                key={series.id}
+                onClick={() => handleCardClick(series.id)}
+                className="bg-card border-border hover:border-primary/30 transition-colors cursor-pointer"
+              >
                 <CardHeader className="pb-3">
                   <div className="flex items-start justify-between">
                     <div>
@@ -134,6 +153,19 @@ export default function ProgressPage() {
       <div className="border-t border-border/40 pt-6">
         <WorkflowBoard />
       </div>
+
+      {/* Reusable Series Detail Modal */}
+      {selectedSeriesId && (
+        <SeriesDetailModal
+          seriesId={selectedSeriesId}
+          isOpen={isModalOpen}
+          onClose={() => {
+            setIsModalOpen(false)
+            setSelectedSeriesId(null)
+          }}
+          onUpdate={fetchSeriesData}
+        />
+      )}
     </div>
   )
 }

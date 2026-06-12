@@ -30,12 +30,12 @@ public class MangakaService : IMangakaService
         int totalSeries = await _context.Series
             .CountAsync(x => x.MangakaId == mangakaId);
 
-        // Đếm số lượng trợ lý của Mangaka (ở đây giả sử so khớp thông tin vai trò là Assistant)
-        int totalAssistants = await _context.Users
-            .CountAsync(x =>
-                x.Role.Code == "Assistant" && // Check vai trò của User là trợ lý
-                x.UserId == mangakaId         // Check liên kết tới người quản lý
-            );
+        // Đếm số trợ lý phân biệt đã nhận task từ Mangaka này
+        int totalAssistants = await _context.Tasks
+            .Where(t => t.AssignerId == mangakaId && t.AssigneeId != null)
+            .Select(t => t.AssigneeId!.Value)
+            .Distinct()
+            .CountAsync();
 
         return new DashboardStatsDto
         {

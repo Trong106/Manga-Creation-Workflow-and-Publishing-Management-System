@@ -12,7 +12,7 @@ namespace MangaStudio.Backend.Controllers;
 
 [ApiController]
 [Route("api/data")]
-[AllowAnonymous] // Allow access without authentication for demo purposes
+[AllowAnonymous]
 public class MangaStudioDataController : ControllerBase
 {
     private readonly AppDbContext _dbContext;
@@ -22,100 +22,187 @@ public class MangaStudioDataController : ControllerBase
         _dbContext = dbContext;
     }
 
+    // GET api/data/series
     [HttpGet("series")]
     public async Task<IActionResult> GetSeriesList()
     {
-        var series = await _dbContext.Series.ToListAsync();
-        var result = new List<object>();
-        
-        foreach (var s in series)
+        var series = await _dbContext.Series
+            .Include(s => s.Mangaka)
+            .Include(s => s.SeriesGenres)
+            .Include(s => s.Chapters)
+                .ThenInclude(c => c.MangaPages)
+                    .ThenInclude(p => p.Tasks)
+                        .ThenInclude(t => t.Assignee)
+            .ToListAsync();
+
+        var result = series.Select(s => new
         {
-            var chaptersCount = await _dbContext.Chapters.CountAsync(c => c.SeriesId == s.SeriesId);
-            var isOngoing = s.Status.ToLower() == "active" || s.Status.ToLower() == "ongoing";
-            
-            result.Add(new
-            {
-                id = s.SeriesId.ToString(),
-                title = s.Title,
-                genre = s.Title.Contains("Dragon") ? "Action / Fantasy" : s.Title.Contains("Bloom") ? "Romance / Drama" : "Sci-Fi / Action",
-                chapters = chaptersCount > 0 ? chaptersCount : 12,
-                progress = s.Status.ToLower() == "completed" ? 100 : (s.Status.ToLower() == "active" || s.Status.ToLower() == "ongoing" ? 78 : 25),
-                status = isOngoing ? "ongoing" : (s.Status.ToLower() == "completed" ? "completed" : "planning"),
-                team = new[] { "yuki", "kenji", "sakura" },
-                starred = s.Status.ToLower() == "completed" || s.Title.Contains("Dragon"),
-                color = s.Title.Contains("Dragon") ? "from-red-500 to-orange-500" : 
-                        s.Title.Contains("Bloom") ? "from-purple-500 to-pink-500" : 
-                        s.Status.ToLower() == "completed" ? "from-cyan-500 to-blue-500" : "from-green-500 to-teal-500"
-            });
-        }
-        
+            id      = s.SeriesId.ToString(),
+            title   = s.Title,
+            titleJp = s.TitleJp,
+            author  = s.Mangaka?.FullName ?? "Yuki Tanaka",
+            createdAt = s.CreatedAt.ToString("dd/MM/yyyy"),
+            createdAtRaw = s.CreatedAt,
+            updatedAtRaw = s.UpdatedAt,
+            genre   = s.SeriesGenres.Any()
+                        ? string.Join(" / ", s.SeriesGenres.Select(g => g.Genre))
+                        : "General",
+            genres  = s.SeriesGenres.Select(g => g.Genre).ToList(),
+            chapters = s.Chapters.Count,
+            status   = s.Status.ToLower(),
+            starred  = s.Ranking.HasValue && s.Ranking <= 3,
+            ranking  = s.Ranking,
+            rating   = s.Rating,
+            readerCount = s.ReaderCount,
+            revenue  = s.ReaderCount * 0.15,
+            coverImageUrl = s.CoverImageUrl,
+            synopsis = s.Synopsis,
+            team = s.Chapters
+                .SelectMany(c => c.MangaPages)
+                .SelectMany(p => p.Tasks)
+                .Where(t => t.Assignee != null)
+                .Select(t => t.Assignee!.FullName)
+                .Distinct()
+                .ToList(),
+            progress = s.Status.ToLower() == "completed" 
+                ? 100 
+                : s.Chapters.SelectMany(c => c.MangaPages).SelectMany(p => p.Tasks).Any()
+                    ? (int)Math.Round((double)s.Chapters.SelectMany(c => c.MangaPages).SelectMany(p => p.Tasks).Count(t => t.Status == "approved") / s.Chapters.SelectMany(c => c.MangaPages).SelectMany(p => p.Tasks).Count() * 100)
+                    : 0
+        });
+
         return Ok(result);
     }
 
+    // GET api/data/dashboard-metrics?role=mangaka&userId=...
     [HttpGet("dashboard-metrics")]
     public async Task<IActionResult> GetDashboardMetrics([FromQuery] string role, [FromQuery] Guid userId)
     {
-        if (string.IsNullOrEmpty(role)) return BadRequest("Role is required.");
+        if (string.IsNullOrEmpty(role))
+            return BadRequest("Role is required.");
 
         switch (role.ToLower())
         {
             case "mangaka":
-                var activeSeries = await _dbContext.Series.CountAsync(s => s.MangakaId == userId && s.Status == "active");
+            {
+                var activeSeries = await _dbContext.Series
+                    .CountAsync(s => s.MangakaId == userId && s.Status == "active");
+
                 var assistants = await _dbContext.Tasks
                     .Where(t => t.AssignerId == userId && t.AssigneeId != null)
                     .Select(t => t.AssigneeId)
                     .Distinct()
                     .CountAsync();
-                var pagesUploaded = await _dbContext.MangaPages.CountAsync(p => p.UploadedById == userId);
+
+                var pagesUploaded = await _dbContext.MangaPages
+                    .CountAsync(p => p.UploadedById == userId);
+
+                // Count total pages across all series owned by mangaka (for target calculation)
+                var totalSeriesPages = await _dbContext.MangaPages
+                    .Where(p => p.Chapter.Series.MangakaId == userId)
+                    .CountAsync();
+
                 return Ok(new[]
                 {
-                    new { title = "Active Series", val = activeSeries.ToString(), change = "+1 this month", icon = "📚" },
-                    new { title = "Team Members", val = assistants.ToString(), change = "Assistants active", icon = "👥" },
-                    new { title = "Pages Uploaded", val = pagesUploaded.ToString(), change = "Target: 30 pages", icon = "📄" }
+                    new { title = "Active Series",   val = activeSeries.ToString(),  change = $"{activeSeries} currently running", icon = "📚" },
+                    new { title = "Team Members",    val = assistants.ToString(),     change = $"{assistants} assistants active",  icon = "👥" },
+                    new { title = "Pages Uploaded",  val = pagesUploaded.ToString(),  change = $"{totalSeriesPages} pages total",  icon = "📄" }
                 });
+            }
 
             case "assistant":
-                var assignedTasks = await _dbContext.Tasks.CountAsync(t => t.AssigneeId == userId && (t.Status == "pending" || t.Status == "in_progress"));
+            {
+                var assignedTasks = await _dbContext.Tasks
+                    .CountAsync(t => t.AssigneeId == userId && (t.Status == "pending" || t.Status == "in_progress"));
+
+                var nextDue = await _dbContext.Tasks
+                    .Where(t => t.AssigneeId == userId && t.Status == "in_progress" && t.DueDate != null)
+                    .OrderBy(t => t.DueDate)
+                    .Select(t => t.DueDate)
+                    .FirstOrDefaultAsync();
+
                 var totalEarned = await _dbContext.Tasks
                     .Where(t => t.AssigneeId == userId && t.Status == "approved")
                     .SumAsync(t => t.PaymentAmount);
+
+                var downloadedPages = await _dbContext.MangaPages
+                    .Where(p => p.Tasks.Any(t => t.AssigneeId == userId && t.Status != "pending"))
+                    .CountAsync();
+
                 return Ok(new[]
                 {
-                    new { title = "Assigned Tasks", val = $"{assignedTasks} pending", change = "Urgent deadline soon", icon = "📋" },
-                    new { title = "Downloaded Pages", val = "14 pages", change = "Ready to ink", icon = "💾" },
-                    new { title = "Earned Payroll", val = $"${totalEarned}", change = "This chapter cycle", icon = "💰" }
+                    new { title = "Assigned Tasks",    val = $"{assignedTasks} pending",      change = nextDue.HasValue ? $"Next due {nextDue.Value:MMM d}" : "No upcoming deadline", icon = "📋" },
+                    new { title = "Downloaded Pages",  val = $"{downloadedPages} pages",       change = "Ready to process",                                                              icon = "💾" },
+                    new { title = "Earned Payroll",    val = $"${totalEarned:F2}",              change = "Approved tasks total",                                                          icon = "💰" }
                 });
+            }
 
             case "tantou":
-                var reviewPages = await _dbContext.MangaPages.CountAsync(p => p.Status == "review" || p.Status == "submitted");
-                var scheduledCount = await _dbContext.PublishSchedules.CountAsync(s => s.Status == "scheduled");
+            {
+                var reviewPages = await _dbContext.MangaPages
+                    .CountAsync(p => p.Status == "review" || p.Status == "submitted");
+
+                var totalPages = await _dbContext.MangaPages.CountAsync();
+
+                var approvedPages = await _dbContext.MangaPages
+                    .CountAsync(p => p.Status == "approved");
+
+                var progressPct = totalPages > 0 ? (int)((double)approvedPages / totalPages * 100) : 0;
+
+                var scheduledCount = await _dbContext.PublishSchedules
+                    .CountAsync(s => s.Status == "scheduled");
+
+                var latestReviewChapter = await _dbContext.MangaPages
+                    .Where(p => p.Status == "review" || p.Status == "submitted")
+                    .OrderByDescending(p => p.Chapter.ChapterNumber)
+                    .Select(p => p.Chapter.ChapterNumber)
+                    .FirstOrDefaultAsync();
+
                 return Ok(new[]
                 {
-                    new { title = "Studio Progress", val = "85%", change = "Chapter 45 in review", icon = "📉" },
-                    new { title = "Pages to Review", val = $"{reviewPages} pages", change = "Pending annotation", icon = "👀" },
-                    new { title = "Publish Status", val = scheduledCount > 0 ? "Scheduled" : "Published", change = $"{scheduledCount} upcoming", icon = "🚀" }
+                    new { title = "Studio Progress", val = $"{progressPct}%",                        change = latestReviewChapter > 0 ? $"Chapter {latestReviewChapter} in review" : "No chapters in review", icon = "📉" },
+                    new { title = "Pages to Review", val = $"{reviewPages} pages",                   change = "Pending annotation",                                                                             icon = "👀" },
+                    new { title = "Publish Status",  val = scheduledCount > 0 ? "Scheduled" : "Up to date", change = $"{scheduledCount} upcoming",                                                        icon = "🚀" }
                 });
+            }
 
             case "editorial":
-                var proposals = await _dbContext.SeriesProposals.CountAsync(p => p.Status == "submitted");
-                var totalVotes = await _dbContext.ReaderVotes.SumAsync(v => v.Votes);
+            {
+                var proposals = await _dbContext.SeriesProposals
+                    .CountAsync(p => p.Status == "submitted");
+
+                var totalVotes = await _dbContext.ReaderVotes.SumAsync(v => (long)v.Votes);
+
+                var topSeries = await _dbContext.Series
+                    .Where(s => s.Ranking == 1)
+                    .Select(s => s.Title)
+                    .FirstOrDefaultAsync();
+
+                var topRankValue = await _dbContext.Series
+                    .Where(s => s.Ranking != null)
+                    .OrderBy(s => s.Ranking)
+                    .Select(s => s.Ranking)
+                    .FirstOrDefaultAsync();
+
                 return Ok(new[]
                 {
-                    new { title = "New Proposals", val = $"{proposals} pending", change = "Awaiting decision", icon = "⚖️" },
-                    new { title = "Reader Votes", val = $"{(totalVotes / 1000.0):F1}K", change = "+12% overall traffic", icon = "🗳️" },
-                    new { title = "Global Ranking", val = "Top 3", change = "Dragon Hunters series", icon = "🏆" }
+                    new { title = "New Proposals",  val = $"{proposals} pending",              change = "Awaiting decision",                                     icon = "⚖️" },
+                    new { title = "Reader Votes",   val = $"{(totalVotes / 1000.0):F1}K",      change = "Total accumulated votes",                               icon = "🗳️" },
+                    new { title = "Global Ranking", val = topRankValue.HasValue ? $"Top {topRankValue}" : "N/A", change = topSeries ?? "No ranked series yet",   icon = "🏆" }
                 });
+            }
 
             default:
                 return BadRequest("Invalid role.");
         }
     }
 
+    // GET api/data/audit-logs
     [HttpGet("audit-logs")]
     public async Task<IActionResult> GetAuditLogs()
     {
         var logs = await _dbContext.AuditLogs
-            .Include(l => l.User)
+            .Include(l => l.User!)
             .ThenInclude(u => u.Role)
             .OrderByDescending(l => l.CreatedAt)
             .ToListAsync();
@@ -125,64 +212,87 @@ public class MangaStudioDataController : ControllerBase
             id = l.AuditLogId.ToString(),
             user = new
             {
-                name = l.User != null ? l.User.FullName : "System",
-                avatar = l.User != null ? l.User.Avatar : "system",
-                role = l.User != null && l.User.Role != null ? l.User.Role.Name : "Automated"
+                name   = l.User != null ? l.User.FullName : "System",
+                avatar = l.User?.Avatar,
+                role   = l.User?.Role?.Name ?? "Automated"
             },
-            action = l.Action,
+            action     = l.Action,
             entityType = l.EntityType,
-            entityName = $"{l.EntityType} (ID: {l.EntityId?.ToString().Substring(0, 8)})",
-            details = l.DetailsJson ?? "No additional details available.",
+            entityName = l.EntityId.HasValue
+                ? $"{l.EntityType} (ID: {l.EntityId.Value.ToString()[..8]})"
+                : l.EntityType,
+            details   = l.DetailsJson ?? "No additional details available.",
             timestamp = GetRelativeTime(l.CreatedAt),
-            category = GetCategory(l.EntityType)
+            category  = GetCategory(l.EntityType)
         });
 
         return Ok(result);
     }
 
+    // GET api/data/reader-votes
     [HttpGet("reader-votes")]
     public async Task<IActionResult> GetReaderVotes()
     {
-        var votes = await _dbContext.ReaderVotes
+        // Get current week votes
+        var currentWeek = System.Globalization.ISOWeek.GetWeekOfYear(DateTime.UtcNow);
+        var currentYear = DateTime.UtcNow.Year;
+        var previousWeek = currentWeek > 1 ? currentWeek - 1 : 52;
+        var previousYear = currentWeek > 1 ? currentYear : currentYear - 1;
+
+        var currentVotes = await _dbContext.ReaderVotes
             .Include(v => v.Series)
+            .Where(v => v.WeekNumber == currentWeek && v.YearNumber == currentYear)
             .OrderBy(v => v.RankNumber)
             .ToListAsync();
 
-        var result = votes.Select(v => new
+        // Get previous week votes for comparison
+        var previousVotesDict = await _dbContext.ReaderVotes
+            .Where(v => v.WeekNumber == previousWeek && v.YearNumber == previousYear)
+            .ToDictionaryAsync(v => v.SeriesId, v => new { votes = v.Votes, rank = v.RankNumber });
+
+        var result = currentVotes.Select(v =>
         {
-            id = v.ReaderVoteId.ToString(),
-            series = v.Series.Title,
-            votes = v.Votes,
-            previousVotes = (int)(v.Votes * 0.95), // mock
-            change = v.Votes - (int)(v.Votes * 0.95),
-            rank = v.RankNumber,
-            previousRank = v.RankNumber == 1 ? 1 : v.RankNumber - 1
+            previousVotesDict.TryGetValue(v.SeriesId, out var prev);
+            return new
+            {
+                id            = v.ReaderVoteId.ToString(),
+                series        = v.Series.Title,
+                votes         = v.Votes,
+                previousVotes = prev?.votes ?? 0,
+                change        = v.Votes - (prev?.votes ?? v.Votes),
+                rank          = v.RankNumber,
+                previousRank  = prev?.rank ?? v.RankNumber
+            };
         });
 
         return Ok(result);
     }
 
+    // GET api/data/publish-schedule
     [HttpGet("publish-schedule")]
     public async Task<IActionResult> GetPublishSchedule()
     {
         var schedules = await _dbContext.PublishSchedules
             .Include(s => s.Chapter)
             .ThenInclude(c => c.Series)
+            .OrderBy(s => s.ScheduledDate)
             .ToListAsync();
 
         var result = schedules.Select(s => new
         {
-            id = s.PublishScheduleId.ToString(),
-            series = s.Chapter.Series.Title,
+            id      = s.PublishScheduleId.ToString(),
+            series  = s.Chapter.Series.Title,
             chapter = s.Chapter.ChapterNumber,
-            status = s.Status.ToLower(),
-            time = s.ScheduledDate.ToString("HH:mm"),
-            day = s.ScheduledDate.Day
+            status  = s.Status.ToLower(),
+            time    = s.ScheduledDate.ToString("HH:mm"),
+            day     = s.ScheduledDate.Day,
+            date    = s.ScheduledDate.ToString("yyyy-MM-dd")
         });
 
         return Ok(result);
     }
 
+    // GET api/data/team
     [HttpGet("team")]
     public async Task<IActionResult> GetTeam()
     {
@@ -192,52 +302,66 @@ public class MangaStudioDataController : ControllerBase
             .Where(u => u.Role.Code == "assistant")
             .ToListAsync();
 
+        var assistantIds = assistants.Select(a => a.UserId).ToList();
+
+        // Batch-load task counts to avoid N+1
+        var completedTaskCounts = await _dbContext.Tasks
+            .Where(t => assistantIds.Contains(t.AssigneeId!.Value) && t.Status == "approved")
+            .GroupBy(t => t.AssigneeId!.Value)
+            .Select(g => new { AssistantId = g.Key, Count = g.Count() })
+            .ToDictionaryAsync(x => x.AssistantId, x => x.Count);
+
+        var currentTaskCounts = await _dbContext.Tasks
+            .Where(t => assistantIds.Contains(t.AssigneeId!.Value) && t.Status == "in_progress")
+            .GroupBy(t => t.AssigneeId!.Value)
+            .Select(g => new { AssistantId = g.Key, Count = g.Count() })
+            .ToDictionaryAsync(x => x.AssistantId, x => x.Count);
+
         var result = assistants.Select(a => new
         {
-            id = a.UserId.ToString(),
-            name = a.FullName,
-            avatar = a.Avatar ?? "kenji",
-            email = a.Email,
-            role = a.AssistantProfile?.Specialty ?? "Assistant",
-            specialty = a.AssistantProfile?.Specialty ?? "General Assistant",
-            rating = a.AssistantProfile?.Rating ?? 4.5m,
-            tasksCompleted = _dbContext.Tasks.Count(t => t.AssigneeId == a.UserId && t.Status == "approved") > 0
-                ? _dbContext.Tasks.Count(t => t.AssigneeId == a.UserId && t.Status == "approved")
-                : 45, // Dynamic from DB with design fallback
-            currentTasks = _dbContext.Tasks.Count(t => t.AssigneeId == a.UserId && t.Status == "in_progress"),
-            hourlyRate = a.AssistantProfile?.HourlyRate ?? 15.00m,
-            status = a.IsActive ? "active" : "inactive"
+            id             = a.UserId.ToString(),
+            name           = a.FullName,
+            avatar         = a.Avatar,
+            email          = a.Email,
+            role           = a.AssistantProfile?.Specialty ?? "Assistant",
+            specialty      = a.AssistantProfile?.Specialty ?? "General Assistant",
+            rating         = a.AssistantProfile?.Rating,
+            tasksCompleted = completedTaskCounts.TryGetValue(a.UserId, out var done) ? done : 0,
+            currentTasks   = currentTaskCounts.TryGetValue(a.UserId, out var inProg) ? inProg : 0,
+            hourlyRate     = a.AssistantProfile?.HourlyRate,
+            status         = a.IsActive ? "active" : "inactive"
         });
 
         return Ok(result);
     }
 
+    // GET api/data/payroll
     [HttpGet("payroll")]
     public async Task<IActionResult> GetPayroll()
     {
         var payrolls = await _dbContext.PayrollRecords
             .Include(p => p.Assistant)
             .ThenInclude(a => a.AssistantProfile)
+            .OrderByDescending(p => p.PeriodEnd)
             .ToListAsync();
 
         var result = new List<object>();
+
         foreach (var p in payrolls)
         {
-            // Compute completed tasks for the period dynamically
-            var tasksCompleted = await _dbContext.Tasks.CountAsync(t => 
-                t.AssigneeId == p.AssistantId && 
+            var tasksCompleted = await _dbContext.Tasks.CountAsync(t =>
+                t.AssigneeId == p.AssistantId &&
                 t.Status == "approved" &&
                 t.DueDate != null &&
-                t.DueDate.Value >= p.PeriodStart && 
+                t.DueDate.Value >= p.PeriodStart &&
                 t.DueDate.Value <= p.PeriodEnd);
 
-            // Compute completed pages for the period dynamically
             var pagesCompleted = await _dbContext.Tasks
-                .Where(t => 
-                    t.AssigneeId == p.AssistantId && 
+                .Where(t =>
+                    t.AssigneeId == p.AssistantId &&
                     t.Status == "approved" &&
                     t.DueDate != null &&
-                    t.DueDate.Value >= p.PeriodStart && 
+                    t.DueDate.Value >= p.PeriodStart &&
                     t.DueDate.Value <= p.PeriodEnd)
                 .Select(t => t.PageId)
                 .Distinct()
@@ -245,26 +369,27 @@ public class MangaStudioDataController : ControllerBase
 
             result.Add(new
             {
-                id = p.PayrollRecordId.ToString(),
-                assistantId = p.AssistantId.ToString(),
-                assistantName = p.Assistant.FullName,
-                assistantAvatar = p.Assistant.Avatar ?? "kenji",
-                role = p.Assistant.AssistantProfile?.Specialty ?? "Assistant",
-                period = $"{p.PeriodStart:MMM d} - {p.PeriodEnd:MMM d, yyyy}",
-                tasksCompleted = tasksCompleted > 0 ? tasksCompleted : 5, // Dynamic from DB with design fallback
-                pagesCompleted = pagesCompleted > 0 ? pagesCompleted : 10, // Dynamic from DB with design fallback
-                baseRate = (double)p.BaseAmount,
-                bonuses = (double)p.BonusAmount,
-                deductions = (double)p.DeductionAmount,
-                totalAmount = (double)p.TotalAmount,
-                status = p.Status.ToLower(),
-                paidDate = p.PaidAt?.ToString("yyyy-MM-dd")
+                id              = p.PayrollRecordId.ToString(),
+                assistantId     = p.AssistantId.ToString(),
+                assistantName   = p.Assistant.FullName,
+                assistantAvatar = p.Assistant.Avatar,
+                role            = p.Assistant.AssistantProfile?.Specialty ?? "Assistant",
+                period          = $"{p.PeriodStart:MMM d} - {p.PeriodEnd:MMM d, yyyy}",
+                tasksCompleted  = tasksCompleted,
+                pagesCompleted  = pagesCompleted,
+                baseRate        = (double)p.BaseAmount,
+                bonuses         = (double)p.BonusAmount,
+                deductions      = (double)p.DeductionAmount,
+                totalAmount     = (double)(p.TotalAmount ?? p.BaseAmount + p.BonusAmount - p.DeductionAmount),
+                status          = p.Status.ToLower(),
+                paidDate        = p.PaidAt?.ToString("yyyy-MM-dd")
             });
         }
 
         return Ok(result);
     }
 
+    // GET api/data/tasks
     [HttpGet("tasks")]
     public async Task<IActionResult> GetTasks()
     {
@@ -273,69 +398,134 @@ public class MangaStudioDataController : ControllerBase
                 .ThenInclude(p => p.Chapter)
                     .ThenInclude(c => c.Series)
             .Include(t => t.Assignee)
+            .OrderByDescending(t => t.CreatedAt)
             .ToListAsync();
 
         var result = tasksList.Select(t => new
         {
-            id = t.TaskId.ToString(),
-            title = t.Title,
-            description = t.Description,
-            type = t.Type.ToLower(),
-            pageId = t.PageId.ToString(),
-            pageNumber = t.Page.PageNumber,
-            regionId = t.RegionId?.ToString(),
-            assigneeId = t.AssigneeId?.ToString(),
+            id           = t.TaskId.ToString(),
+            title        = t.Title,
+            description  = t.Description,
+            type         = t.Type.ToLower(),
+            pageId       = t.PageId.ToString(),
+            pageNumber   = t.Page.PageNumber,
+            regionId     = t.RegionId?.ToString(),
+            assigneeId   = t.AssigneeId?.ToString(),
             assigneeName = t.Assignee?.FullName ?? "Unassigned",
-            assigneeAvatar = t.Assignee?.Avatar ?? "kenji",
-            status = t.Status.ToLower(),
-            dueDate = t.DueDate?.ToString("yyyy-MM-dd") ?? "TBD",
-            payment = (double)t.PaymentAmount,
-            chapterNumber = t.Page?.Chapter?.ChapterNumber ?? 0,
-            seriesTitle = t.Page?.Chapter?.Series?.Title ?? "Unknown Series"
+            assigneeAvatar = t.Assignee?.Avatar,
+            status       = t.Status.ToLower(),
+            dueDate      = t.DueDate?.ToString("yyyy-MM-dd"),
+            payment      = (double)t.PaymentAmount,
+            chapterNumber  = t.Page?.Chapter?.ChapterNumber ?? 0,
+            seriesTitle    = t.Page?.Chapter?.Series?.Title
         });
 
         return Ok(result);
     }
 
+    // GET api/data/review-series
+    [HttpGet("review-series")]
+    public async Task<IActionResult> GetReviewSeriesList()
+    {
+        var seriesList = await _dbContext.Series
+            .Include(s => s.Mangaka)
+            .Include(s => s.SeriesGenres)
+            .Include(s => s.Chapters)
+                .ThenInclude(c => c.MangaPages)
+            .Where(s => s.Chapters.Any(c => c.MangaPages.Any(p => p.Status == "review" || p.Status == "submitted")))
+            .ToListAsync();
+
+        var result = seriesList
+            .Select(s => {
+                var oldestPageUploadedAt = s.Chapters
+                    .SelectMany(c => c.MangaPages)
+                    .Where(p => (p.Status == "review" || p.Status == "submitted") && p.UploadedAt.HasValue)
+                    .OrderBy(p => p.UploadedAt)
+                    .Select(p => p.UploadedAt)
+                    .FirstOrDefault();
+
+                return new {
+                    Series = s,
+                    OldestUploadedAt = oldestPageUploadedAt ?? DateTime.MaxValue
+                };
+            })
+            .OrderBy(x => x.OldestUploadedAt)
+            .Select(x => new
+            {
+                id      = x.Series.SeriesId.ToString(),
+                title   = x.Series.Title,
+                titleJp = x.Series.TitleJp,
+                author  = x.Series.Mangaka?.FullName ?? "Yuki Tanaka",
+                createdAt = x.Series.CreatedAt.ToString("dd/MM/yyyy"),
+                genre   = x.Series.SeriesGenres.Any()
+                            ? string.Join(" / ", x.Series.SeriesGenres.Select(g => g.Genre))
+                            : "General",
+                genres  = x.Series.SeriesGenres.Select(g => g.Genre).ToList(),
+                chapters = x.Series.Chapters.Count,
+                status   = x.Series.Status.ToLower(),
+                readerCount = x.Series.ReaderCount,
+                coverImageUrl = x.Series.CoverImageUrl,
+                synopsis = x.Series.Synopsis,
+                oldestReviewPageTime = x.OldestUploadedAt == DateTime.MaxValue ? null : x.OldestUploadedAt.ToString("yyyy-MM-dd HH:mm:ss")
+            })
+            .ToList();
+
+        return Ok(result);
+    }
+
+    // GET api/data/review-pages?chapterId=...
     [HttpGet("review-pages")]
     public async Task<IActionResult> GetReviewPages([FromQuery] Guid? chapterId)
     {
-        // Fallback to the seeded chapter ID from SQL script if not provided
-        var targetChapterId = chapterId ?? Guid.Parse("cccccccc-cccc-cccc-cccc-cccccccccccc");
+        IQueryable<MangaPage> query = _dbContext.MangaPages;
 
-        var pages = await _dbContext.MangaPages
-            .Where(p => p.ChapterId == targetChapterId)
+        if (chapterId != null && chapterId != Guid.Empty)
+        {
+            query = query.Where(p => p.ChapterId == chapterId.Value);
+        }
+        else
+        {
+            query = query.Where(p => p.Status == "review" || p.Status == "submitted");
+        }
+
+        var pages = await query
             .Include(p => p.PageAnnotations)
             .Include(p => p.ReviewComments)
-            .ThenInclude(c => c.User)
+                .ThenInclude(c => c.User)
+            .Include(p => p.Chapter)
+                .ThenInclude(c => c.Series)
             .OrderBy(p => p.PageNumber)
             .ToListAsync();
 
         var result = pages.Select(p => new
         {
-            id = p.PageId.ToString(),
-            number = p.PageNumber,
-            status = p.Status.ToLower(),
-            imageUrl = p.CurrentImageUrl,
+            id             = p.PageId.ToString(),
+            number         = p.PageNumber,
+            status         = p.Status.ToLower(),
+            imageUrl       = p.CurrentImageUrl,
+            chapterId      = p.ChapterId.ToString(),
+            chapterNumber  = p.Chapter.ChapterNumber,
+            seriesId       = p.Chapter.SeriesId.ToString(),
+            seriesTitle    = p.Chapter.Series.Title,
             hasAnnotations = p.PageAnnotations.Any(),
             annotations = p.PageAnnotations.Select(a => new
             {
-                id = a.AnnotationId.ToString(),
-                createdById = a.CreatedById.ToString(),
-                x = (double)a.X,
-                y = (double)a.Y,
-                width = (double?)a.Width,
-                height = (double?)a.Height,
-                body = a.Body,
-                status = a.Status.ToLower()
+                id           = a.AnnotationId.ToString(),
+                createdById  = a.CreatedById.ToString(),
+                x            = (double)a.X,
+                y            = (double)a.Y,
+                width        = (double?)a.Width,
+                height       = (double?)a.Height,
+                body         = a.Body,
+                status       = a.Status.ToLower()
             }),
             comments = p.ReviewComments.Select(c => new
             {
-                id = c.CommentId.ToString(),
-                userId = c.UserId.ToString(),
-                userName = c.User.FullName,
-                avatar = c.User.Avatar ?? "sakura",
-                body = c.Body,
+                id        = c.CommentId.ToString(),
+                userId    = c.UserId.ToString(),
+                userName  = c.User.FullName,
+                avatar    = c.User.Avatar,
+                body      = c.Body,
                 createdAt = GetRelativeTime(c.CreatedAt)
             })
         });
@@ -343,26 +533,26 @@ public class MangaStudioDataController : ControllerBase
         return Ok(result);
     }
 
-    private static string GetCategory(string entityType)
-    {
-        return entityType.ToLower() switch
+    // ─── Private helpers ────────────────────────────────────────────────────────
+
+    private static string GetCategory(string entityType) =>
+        entityType.ToLower() switch
         {
-            "series" => "series",
+            "series"  => "series",
             "chapter" => "chapter",
-            "user" => "user",
+            "user"    => "user",
             "payment" => "payment",
-            _ => "system"
+            _         => "system"
         };
-    }
 
     private static string GetRelativeTime(DateTime dateTime)
     {
         var span = DateTime.UtcNow - dateTime;
-        if (span.TotalDays > 365) return $"{(int)(span.TotalDays / 365)} years ago";
-        if (span.TotalDays > 30) return $"{(int)(span.TotalDays / 30)} months ago";
-        if (span.TotalDays > 7) return $"{(int)(span.TotalDays / 7)} weeks ago";
-        if (span.TotalDays >= 1) return $"{(int)span.TotalDays} day(s) ago";
-        if (span.TotalHours >= 1) return $"{(int)span.TotalHours} hour(s) ago";
+        if (span.TotalDays > 365)  return $"{(int)(span.TotalDays / 365)} year(s) ago";
+        if (span.TotalDays > 30)   return $"{(int)(span.TotalDays / 30)} month(s) ago";
+        if (span.TotalDays > 7)    return $"{(int)(span.TotalDays / 7)} week(s) ago";
+        if (span.TotalDays >= 1)   return $"{(int)span.TotalDays} day(s) ago";
+        if (span.TotalHours >= 1)  return $"{(int)span.TotalHours} hour(s) ago";
         if (span.TotalMinutes >= 1) return $"{(int)span.TotalMinutes} minute(s) ago";
         return "just now";
     }
