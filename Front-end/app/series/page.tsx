@@ -322,6 +322,7 @@ export default function SeriesPage() {
       ) : series.length === 0 ? (
         <div className="text-center py-12 text-zinc-400">Không có bộ truyện nào trong cơ sở dữ liệu.</div>
       ) : (
+<<<<<<< Updated upstream
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
           {series.map((s) => (
             <Card
@@ -366,6 +367,29 @@ export default function SeriesPage() {
                           </DropdownMenuItem>
                         </DropdownMenuContent>
                       </DropdownMenu>
+=======
+        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-5">
+          {series.map((s) => {
+            const coverUrl = getFullCoverUrl(s.coverImageUrl)
+            return (
+              <div
+                key={s.id}
+                onClick={() => handleCardClick(s.id)}
+                className="group cursor-pointer space-y-2.5"
+              >
+                {/* Image Container */}
+                <div className="relative aspect-[3/4] rounded-lg overflow-hidden border border-zinc-800 bg-[#202023] flex items-center justify-center">
+                  {s.coverImageUrl ? (
+                    <img
+                      src={coverUrl}
+                      alt={s.title}
+                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                    />
+                  ) : (
+                    <div className="text-center p-4">
+                      <BookOpen className="w-8 h-8 text-zinc-700 mx-auto mb-1" />
+                      <span className="text-[10px] text-zinc-500">No cover</span>
+>>>>>>> Stashed changes
                     </div>
 
                     <div className="flex items-center gap-2 mt-2">
@@ -415,9 +439,28 @@ export default function SeriesPage() {
                     </div>
                   </div>
                 </div>
+<<<<<<< Updated upstream
               </CardContent>
             </Card>
           ))}
+=======
+
+                {/* Text Info */}
+                <div className="space-y-1">
+                  <h4 className="font-semibold text-sm truncate text-zinc-100 group-hover:text-primary transition-colors leading-tight">
+                    {s.title}
+                  </h4>
+                  <div className="flex items-center justify-between text-xs text-zinc-400">
+                    <span>Chapter {s.chapters}</span>
+                    <Badge variant="outline" className={`${statusColors[s.status] || "bg-secondary text-secondary-foreground border-none"} text-[10px] px-1 py-0`}>
+                      {s.status}
+                    </Badge>
+                  </div>
+                </div>
+              </div>
+            )
+          })}
+>>>>>>> Stashed changes
         </div>
       )}
     </div>

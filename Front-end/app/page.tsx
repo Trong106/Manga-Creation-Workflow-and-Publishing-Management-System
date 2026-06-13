@@ -8,7 +8,7 @@ import { ProjectList as MangaCarousel } from "@/components/manga/project-list";
 import { useState, useEffect } from "react";
 import { API_BASE_URL } from "@/lib/api-config";
 
-// Định nghĩa danh sách tính năng theo từng vai trò như Toàn yêu cầu
+// Định nghĩa danh sách tính năng theo từng vai trò 
 const ROLE_INFO: Record<string, { name: string; desc: string; metrics: { title: string; val: string; change: string; icon: string }[] }> = {
   mangaka: {
     name: 'Yuki Tanaka (Mangaka)',

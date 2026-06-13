@@ -55,6 +55,7 @@ export default function ReviewPage() {
 
   return (
     <div className="space-y-6">
+<<<<<<< Updated upstream
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-3xl font-bold tracking-tight flex items-center gap-3">
@@ -64,6 +65,75 @@ export default function ReviewPage() {
           <p className="text-muted-foreground mt-1">
             Review and annotate manga pages
           </p>
+=======
+      {/* SCREEN 1: Review Queue List */}
+      {!activeSeriesId ? (
+        <div className="space-y-6">
+          <div>
+            <h1 className="text-3xl font-bold tracking-tight text-white flex items-center gap-3">
+              <Eye className="w-8 h-8 text-primary" />
+              Review Pages Queue
+            </h1>
+            <p className="text-muted-foreground mt-1">
+              Danh sách truyện có trang vẽ hoàn thành chờ duyệt (Được xếp theo thời gian hoàn thành sớm nhất).
+            </p>
+          </div>
+
+          {loadingQueue ? (
+            <div className="text-center py-12 text-zinc-400 text-sm">Đang tải hàng đợi duyệt bài...</div>
+          ) : reviewSeries.length === 0 ? (
+            <div className="text-center py-12 text-zinc-500 text-sm">Không có trang truyện nào cần duyệt hiện tại. 🎉</div>
+          ) : (
+            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-5">
+              {reviewSeries.map((s) => {
+                const coverUrl = getFullCoverUrl(s.coverImageUrl)
+                const relativeTime = getRelativeTime(s.oldestReviewPageTime)
+                return (
+                  <div
+                    key={s.id}
+                    onClick={() => {
+                      setActiveSeriesId(s.id)
+                      setActiveSeriesTitle(s.title)
+                    }}
+                    className="group cursor-pointer space-y-2.5"
+                  >
+                    {/* Image Cover */}
+                    <div className="relative aspect-[3/4] rounded-lg overflow-hidden border border-zinc-800 bg-[#202023] flex items-center justify-center">
+                      {s.coverImageUrl ? (
+                        <img
+                          src={coverUrl}
+                          alt={s.title}
+                          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                        />
+                      ) : (
+                        <div className="text-center p-4">
+                          <BookOpen className="w-8 h-8 text-zinc-700 mx-auto mb-1" />
+                          <span className="text-[10px] text-zinc-500">No cover</span>
+                        </div>
+                      )}
+
+                      {/* Time Badge top-left */}
+                      <div className="absolute top-2 left-2 text-[10px] px-2 py-0.5 rounded bg-amber-500 text-black font-bold flex items-center gap-1 shadow-lg">
+                        <Clock className="w-3 h-3" />
+                        {relativeTime}
+                      </div>
+                    </div>
+
+                    {/* Text info */}
+                    <div className="space-y-0.5">
+                      <h4 className="font-semibold text-sm truncate text-zinc-100 group-hover:text-primary transition-colors leading-tight">
+                        {s.title}
+                      </h4>
+                      <p className="text-xs text-zinc-400">
+                        {s.chapters} chapters • {s.genre}
+                      </p>
+                    </div>
+                  </div>
+                )
+              })}
+            </div>
+          )}
+>>>>>>> Stashed changes
         </div>
       </div>
 
