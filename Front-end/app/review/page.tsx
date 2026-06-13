@@ -1,6 +1,7 @@
 "use client"
 
-import { Eye, Check, X, MessageSquare, ZoomIn, ChevronLeft, ChevronRight, Pencil, Download } from "lucide-react"
+import { useState, useEffect } from "react"
+import { Eye, Check, X, MessageSquare, ZoomIn, ChevronLeft, ChevronRight, Pencil, Download, ArrowLeft, BookOpen, Clock } from "lucide-react"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
@@ -13,59 +14,234 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
-import { useState, useEffect } from "react"
 import { API_BASE_URL } from "@/lib/api-config"
+import { useAuth } from "@/lib/auth-context"
 
 export default function ReviewPage() {
+  const { token } = useAuth()
+  
+  // Navigation & selection state
+  const [activeSeriesId, setActiveSeriesId] = useState<string | null>(null)
+  const [activeSeriesTitle, setActiveSeriesTitle] = useState("")
+  
+  // Data states
+  const [reviewSeries, setReviewSeries] = useState<any[]>([])
+  const [loadingQueue, setLoadingQueue] = useState(true)
+  
   const [pages, setPages] = useState<any[]>([])
-  const [loading, setLoading] = useState(true)
-  const [currentPage, setCurrentPage] = useState(1)
-  const [selectedSeries, setSelectedSeries] = useState("dragon-hunters")
-  const [selectedChapter, setSelectedChapter] = useState("45")
+  const [loadingPages, setLoadingPages] = useState(false)
+  const [currentPageIndex, setCurrentPageIndex] = useState(0)
+  
+  // Chapter filter inside selected series
+  const [chapters, setChapters] = useState<string[]>([])
+  const [selectedChapter, setSelectedChapter] = useState<string>("all")
+  
+  // Interaction states
   const [annotationMode, setAnnotationMode] = useState(false)
   const [comment, setComment] = useState("")
 
-  useEffect(() => {
-    setLoading(true)
-    fetch(`${API_BASE_URL}/api/data/review-pages`)
+  // Fetch the Review Series queue (Screen 1)
+  const fetchQueue = () => {
+    setLoadingQueue(true)
+    fetch(`${API_BASE_URL}/api/data/review-series`)
       .then((res) => res.json())
       .then((data) => {
         if (Array.isArray(data)) {
-          setPages(data)
-          if (data.length > 0) {
-            setCurrentPage(1)
-          }
+          setReviewSeries(data)
         }
-        setLoading(false)
+        setLoadingQueue(false)
       })
       .catch((err) => {
-        console.error("Error fetching review pages:", err)
-        setLoading(false)
+        console.error("Lỗi lấy danh sách review queue:", err)
+        setLoadingQueue(false)
       })
+  }
+
+  useEffect(() => {
+    fetchQueue()
   }, [])
 
-  const page = pages[currentPage - 1]
+  // Fetch pages when a series is selected (Screen 2)
+  useEffect(() => {
+    if (activeSeriesId && token) {
+      setLoadingPages(true)
+      fetch(`${API_BASE_URL}/api/data/review-pages`, {
+        headers: {
+          "Authorization": `Bearer ${token}`
+        }
+      })
+        .then((res) => res.json())
+        .then((data) => {
+          if (Array.isArray(data)) {
+            // Lọc các trang thuộc series đang chọn
+            const seriesPages = data.filter((p: any) => p.seriesId === activeSeriesId)
+            setPages(seriesPages)
+            setCurrentPageIndex(0)
+
+            // Lấy danh sách chapter phân biệt để lọc
+            const uniqueChapters = Array.from(new Set(seriesPages.map((p: any) => p.chapterNumber.toString())))
+            setChapters(uniqueChapters)
+            setSelectedChapter("all")
+          }
+          setLoadingPages(false)
+        })
+        .catch((err) => {
+          console.error("Lỗi lấy trang review:", err)
+          setLoadingPages(false)
+        })
+    }
+  }, [activeSeriesId, token])
+
+  // Filter pages by chapter dropdown
+  const displayedPages = selectedChapter === "all"
+    ? pages
+    : pages.filter((p) => p.chapterNumber.toString() === selectedChapter)
+
+  const activePage = displayedPages[currentPageIndex]
+
+  const getFullCoverUrl = (coverPath?: string) => {
+    if (!coverPath) return ""
+    if (coverPath.startsWith("http")) return coverPath
+    return `${API_BASE_URL}${coverPath}`
+  }
+
+  const getRelativeTime = (timeStr?: string) => {
+    if (!timeStr) return ""
+    const date = new Date(timeStr)
+    const diffMs = new Date().getTime() - date.getTime()
+    const diffMins = Math.floor(diffMs / 60000)
+    const diffHours = Math.floor(diffMins / 60)
+    const diffDays = Math.floor(diffHours / 24)
+
+    if (diffMins < 60) return `${diffMins || 1} phút trước`
+    if (diffHours < 24) return `${diffHours} giờ trước`
+    return `${diffDays} ngày trước`
+  }
+
+  // Handle page approval
+  const handleApprovePage = async () => {
+    if (!activePage || !token) return
+    try {
+      const res = await fetch(`${API_BASE_URL}/api/mangaka/pages/${activePage.id}/status`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${token}`
+        },
+        body: JSON.stringify({ status: "approved" })
+      })
+      if (res.ok) {
+        alert("Đã duyệt trang thành công!")
+        // Refresh pages
+        const updated = pages.map((p) => p.id === activePage.id ? { ...p, status: "approved" } : p)
+        setPages(updated)
+      } else {
+        alert("Duyệt trang thất bại")
+      }
+    } catch (err) {
+      console.error(err)
+      alert("Lỗi kết nối server")
+    }
+  }
+
+  // Handle request revision
+  const handleRequestRevision = async () => {
+    if (!activePage || !token) return
+    try {
+      const res = await fetch(`${API_BASE_URL}/api/mangaka/pages/${activePage.id}/status`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${token}`
+        },
+        body: JSON.stringify({ status: "revision" })
+      })
+      if (res.ok) {
+        alert("Đã yêu cầu chỉnh sửa thành công!")
+        const updated = pages.map((p) => p.id === activePage.id ? { ...p, status: "revision" } : p)
+        setPages(updated)
+      } else {
+        alert("Thất bại")
+      }
+    } catch (err) {
+      console.error(err)
+      alert("Lỗi kết nối")
+    }
+  }
+
+  // Handle annotation click/placement
+  const handlePageClick = async (e: React.MouseEvent<HTMLDivElement>) => {
+    if (!annotationMode || !activePage || !token) return
+    const rect = e.currentTarget.getBoundingClientRect()
+    const x = ((e.clientX - rect.left) / rect.width) * 100
+    const y = ((e.clientY - rect.top) / rect.height) * 100
+
+    const body = prompt("Nhập nội dung ghi chú chỉnh sửa:")
+    if (!body) return
+
+    try {
+      const res = await fetch(`${API_BASE_URL}/api/mangaka/pages/${activePage.id}/annotations`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${token}`
+        },
+        body: JSON.stringify({ x, y, body })
+      })
+      if (res.ok) {
+        const newAnn = await res.json()
+        const updated = pages.map((p) => {
+          if (p.id === activePage.id) {
+            return { ...p, annotations: [...(p.annotations || []), newAnn] }
+          }
+          return p
+        })
+        setPages(updated)
+      }
+    } catch (err) {
+      console.error(err)
+    }
+  }
+
+  // Handle posting comments
+  const handlePostComment = async () => {
+    if (!activePage || !comment.trim() || !token) return
+    try {
+      const res = await fetch(`${API_BASE_URL}/api/mangaka/pages/${activePage.id}/comments`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${token}`
+        },
+        body: JSON.stringify({ body: comment })
+      })
+      if (res.ok) {
+        const newComment = await res.json()
+        const updated = pages.map((p) => {
+          if (p.id === activePage.id) {
+            return { ...p, comments: [...(p.comments || []), newComment] }
+          }
+          return p
+        })
+        setPages(updated)
+        setComment("")
+      }
+    } catch (err) {
+      console.error(err)
+    }
+  }
 
   const statusColors = {
     pending: "bg-muted text-muted-foreground",
-    review: "bg-warning/20 text-warning",
-    approved: "bg-success/20 text-success",
-    rejected: "bg-destructive/20 text-destructive",
+    review: "bg-amber-500/20 text-amber-400 border-amber-500/30",
+    approved: "bg-green-500/20 text-green-400 border-green-500/30",
+    rejected: "bg-red-500/20 text-red-400 border-red-500/30",
+    submitted: "bg-blue-500/20 text-blue-400 border-blue-500/30",
+    revision: "bg-orange-500/20 text-orange-400 border-orange-500/30",
   }
 
   return (
     <div className="space-y-6">
-<<<<<<< Updated upstream
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-3xl font-bold tracking-tight flex items-center gap-3">
-            <Eye className="w-8 h-8 text-primary" />
-            Review Pages
-          </h1>
-          <p className="text-muted-foreground mt-1">
-            Review and annotate manga pages
-          </p>
-=======
       {/* SCREEN 1: Review Queue List */}
       {!activeSeriesId ? (
         <div className="space-y-6">
@@ -108,7 +284,7 @@ export default function ReviewPage() {
                       ) : (
                         <div className="text-center p-4">
                           <BookOpen className="w-8 h-8 text-zinc-700 mx-auto mb-1" />
-                          <span className="text-[10px] text-zinc-500">No cover</span>
+                          <span className="text-[10px] text-zinc-500">Chưa có ảnh</span>
                         </div>
                       )}
 
@@ -133,263 +309,268 @@ export default function ReviewPage() {
               })}
             </div>
           )}
->>>>>>> Stashed changes
         </div>
-      </div>
-
-      <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
-        {/* Main Viewer */}
-        <div className="lg:col-span-3 space-y-4">
-          {/* Selection Bar */}
-          <Card className="bg-card border-border">
-            <CardContent className="p-4">
-              <div className="flex items-center gap-4">
-                <Select value={selectedSeries} onValueChange={setSelectedSeries}>
-                  <SelectTrigger className="w-48">
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="dragon-hunters">Dragon Hunters</SelectItem>
-                    <SelectItem value="night-bloom">Night Bloom</SelectItem>
-                  </SelectContent>
-                </Select>
-                <Select value={selectedChapter} onValueChange={setSelectedChapter}>
-                  <SelectTrigger className="w-48">
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="45">Chapter 45</SelectItem>
-                    <SelectItem value="44">Chapter 44</SelectItem>
-                  </SelectContent>
-                </Select>
-                <div className="flex-1" />
-                <Button
-                  variant={annotationMode ? "default" : "outline"}
-                  onClick={() => setAnnotationMode(!annotationMode)}
-                  className={annotationMode ? "bg-primary text-primary-foreground" : ""}
-                >
-                  <Pencil className="w-4 h-4 mr-2" />
-                  Annotate
-                </Button>
-                <Button variant="outline">
-                  <Download className="w-4 h-4 mr-2" />
-                  Download
-                </Button>
-              </div>
-            </CardContent>
-          </Card>
-
-          <Card className="bg-card border-border">
-            <CardContent className="p-6">
-              {loading ? (
-                <div className="aspect-[3/4] bg-secondary rounded-lg flex items-center justify-center relative text-zinc-400">
-                  Loading manga pages...
-                </div>
-              ) : pages.length === 0 ? (
-                <div className="aspect-[3/4] bg-secondary rounded-lg flex items-center justify-center relative text-zinc-400">
-                  No pages found in this chapter.
-                </div>
-              ) : (
-                <div className="aspect-[3/4] bg-secondary rounded-lg flex items-center justify-center relative overflow-hidden">
-                  {page?.imageUrl ? (
-                    <img
-                      src={page.imageUrl}
-                      alt={`Page ${currentPage}`}
-                      className="max-h-full max-w-full object-contain"
-                    />
-                  ) : (
-                    <div className="text-center">
-                      <p className="text-4xl font-bold text-muted-foreground mb-2">Page {currentPage}</p>
-                      <p className="text-muted-foreground">Dragon Hunters - Chapter 45</p>
-                      {annotationMode && (
-                        <p className="text-sm text-primary mt-4">Click on the page to add annotations</p>
-                      )}
-                    </div>
-                  )}
-                  
-                  {/* Dynamic annotations */}
-                  {page?.annotations?.map((ann: any, index: number) => (
-                    <div
-                      key={ann.id}
-                      style={{
-                        left: `${ann.x}%`,
-                        top: `${ann.y}%`,
-                      }}
-                      title={ann.body}
-                      className="absolute w-8 h-8 bg-warning rounded-full flex items-center justify-center cursor-pointer -translate-x-1/2 -translate-y-1/2"
-                    >
-                      <span className="text-warning-foreground font-bold text-xs">{index + 1}</span>
-                    </div>
-                  ))}
-                </div>
-              )}
-
-              {/* Navigation */}
-              <div className="flex items-center justify-between mt-4">
-                <Button
-                  variant="outline"
-                  onClick={() => setCurrentPage(Math.max(1, currentPage - 1))}
-                  disabled={currentPage === 1 || pages.length === 0}
-                >
-                  <ChevronLeft className="w-4 h-4 mr-2" />
-                  Previous
-                </Button>
-                <div className="flex items-center gap-2">
-                  <span className="text-muted-foreground">Page</span>
-                  <Select
-                    value={currentPage.toString()}
-                    onValueChange={(v) => setCurrentPage(parseInt(v))}
-                    disabled={pages.length === 0}
-                  >
-                    <SelectTrigger className="w-20">
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {pages.map((p) => (
-                        <SelectItem key={p.id} value={p.number.toString()}>
-                          {p.number}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                  <span className="text-muted-foreground">of {pages.length}</span>
-                </div>
-                <Button
-                  variant="outline"
-                  onClick={() => setCurrentPage(Math.min(pages.length, currentPage + 1))}
-                  disabled={currentPage === pages.length || pages.length === 0}
-                >
-                  Next
-                  <ChevronRight className="w-4 h-4 ml-2" />
-                </Button>
-              </div>
-            </CardContent>
-          </Card>
-
-          {/* Actions */}
-          <Card className="bg-card border-border">
-            <CardContent className="p-4">
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-4">
-                  <Avatar className="w-8 h-8">
-                    <AvatarImage src="https://api.dicebear.com/7.x/notionists/svg?seed=yuki" />
-                    <AvatarFallback>Y</AvatarFallback>
-                  </Avatar>
-                  <div>
-                    <p className="text-sm font-medium">Yuki Tanaka</p>
-                    <p className="text-xs text-muted-foreground">Submitted 2 hours ago</p>
-                  </div>
-                  <Badge className={statusColors[(page?.status || "pending") as keyof typeof statusColors]}>
-                    {page?.status || "pending"}
-                  </Badge>
-                </div>
-                <div className="flex items-center gap-2">
-                  <Button variant="outline" className="text-destructive border-destructive/50">
-                    <X className="w-4 h-4 mr-2" />
-                    Request Revision
-                  </Button>
-                  <Button className="bg-success text-success-foreground hover:bg-success/90">
-                    <Check className="w-4 h-4 mr-2" />
-                    Approve Page
-                  </Button>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-        </div>
-
-        {/* Sidebar */}
+      ) : (
+        /* SCREEN 2: Main Annotation Viewer */
         <div className="space-y-6">
-          {/* Page Thumbnails */}
-          <Card className="bg-card border-border">
-            <CardHeader>
-              <CardTitle className="text-sm">Pages Overview</CardTitle>
-            </CardHeader>
-            <CardContent>
-              {loading ? (
-                <div className="text-center py-4 text-xs text-muted-foreground">Loading overview...</div>
-              ) : pages.length === 0 ? (
-                <div className="text-center py-4 text-xs text-muted-foreground">No pages.</div>
-              ) : (
-                <div className="grid grid-cols-4 gap-2">
-                  {pages.map((p) => (
-                    <button
-                      key={p.id}
-                      onClick={() => setCurrentPage(p.number)}
-                      className={`aspect-[3/4] rounded border-2 transition-colors relative ${
-                        currentPage === p.number
-                          ? "border-primary bg-primary/10"
-                          : "border-border bg-secondary hover:border-primary/50"
+          <div className="flex items-center justify-between">
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => {
+                setActiveSeriesId(null)
+                setActiveSeriesTitle("")
+                fetchQueue()
+              }}
+              className="border-zinc-800 text-zinc-300 hover:bg-zinc-900"
+            >
+              <ArrowLeft className="w-4 h-4 mr-2" />
+              Quay lại danh sách duyệt
+            </Button>
+            <div className="text-right">
+              <h2 className="text-xl font-bold text-white leading-none">{activeSeriesTitle}</h2>
+              <span className="text-xs text-zinc-500">Review Board</span>
+            </div>
+          </div>
+
+          <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
+            {/* Cột trái: Manga Viewer */}
+            <div className="lg:col-span-3 space-y-4">
+              {/* Toolbar */}
+              <Card className="bg-zinc-900 border-zinc-800 text-white">
+                <CardContent className="p-4 flex items-center justify-between flex-wrap gap-4">
+                  <div className="flex items-center gap-3">
+                    <span className="text-xs text-zinc-400">Lọc Chương:</span>
+                    <Select value={selectedChapter} onValueChange={(v) => {
+                      setSelectedChapter(v)
+                      setCurrentPageIndex(0)
+                    }}>
+                      <SelectTrigger className="w-32 bg-zinc-950 border-zinc-800 text-white text-xs">
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent className="bg-zinc-900 border-zinc-800 text-white text-xs">
+                        <SelectItem value="all">Tất cả chương</SelectItem>
+                        {chapters.map((ch) => (
+                          <SelectItem key={ch} value={ch}>Chương {ch}</SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+
+                  <div className="flex items-center gap-2">
+                    <Button
+                      size="sm"
+                      variant={annotationMode ? "default" : "outline"}
+                      onClick={() => setAnnotationMode(!annotationMode)}
+                      className={annotationMode ? "bg-primary text-primary-foreground font-semibold" : "border-zinc-800 text-zinc-300 hover:bg-zinc-800"}
+                    >
+                      <Pencil className="w-4 h-4 mr-2" />
+                      {annotationMode ? "Đang vẽ Note..." : "Vẽ Note sửa bài"}
+                    </Button>
+                  </div>
+                </CardContent>
+              </Card>
+
+              {/* Main Image View */}
+              <Card className="bg-zinc-900 border-zinc-800 text-white">
+                <CardContent className="p-6">
+                  {loadingPages ? (
+                    <div className="aspect-[3/4] bg-zinc-950 rounded-lg flex items-center justify-center text-zinc-400">
+                      Đang tải trang vẽ...
+                    </div>
+                  ) : displayedPages.length === 0 ? (
+                    <div className="aspect-[3/4] bg-zinc-950 rounded-lg flex items-center justify-center text-zinc-500 text-sm">
+                      Không có trang vẽ nào đang chờ duyệt trong bộ lọc này.
+                    </div>
+                  ) : (
+                    <div
+                      onClick={handlePageClick}
+                      className={`aspect-[3/4] bg-zinc-950 rounded-lg flex items-center justify-center relative overflow-hidden ${
+                        annotationMode ? "cursor-crosshair border border-primary/50" : ""
                       }`}
                     >
-                      <span className="text-xs">{p.number}</span>
-                      {p.status === "approved" && (
-                        <div className="absolute top-0.5 right-0.5 w-2 h-2 bg-success rounded-full" />
+                      {activePage?.imageUrl ? (
+                        <img
+                          src={getFullCoverUrl(activePage.imageUrl)}
+                          alt={`Page ${activePage.number}`}
+                          className="max-h-full max-w-full object-contain select-none"
+                        />
+                      ) : (
+                        <div className="text-center p-4">
+                          <p className="text-4xl font-bold text-zinc-700 mb-2">Trang {activePage?.number}</p>
+                          <p className="text-zinc-500 text-xs">Ảnh chưa tải lên</p>
+                        </div>
                       )}
-                      {p.hasAnnotations && (
-                        <div className="absolute bottom-0.5 right-0.5 w-2 h-2 bg-warning rounded-full" />
-                      )}
-                    </button>
-                  ))}
-                </div>
-              )}
-              <div className="flex items-center gap-4 mt-4 text-xs">
-                <div className="flex items-center gap-1">
-                  <div className="w-2 h-2 bg-success rounded-full" />
-                  <span className="text-muted-foreground">Approved</span>
-                </div>
-                <div className="flex items-center gap-1">
-                  <div className="w-2 h-2 bg-warning rounded-full" />
-                  <span className="text-muted-foreground">Has Notes</span>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
 
-          {/* Comments */}
-          <Card className="bg-card border-border">
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2 text-sm">
-                <MessageSquare className="w-4 h-4" />
-                Comments
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="space-y-3 max-h-[250px] overflow-y-auto">
-                {page?.comments?.map((c: any) => (
-                  <div key={c.id} className="p-3 bg-secondary/50 rounded-lg">
-                    <div className="flex items-center gap-2 mb-2">
-                      <Avatar className="w-5 h-5">
-                        <AvatarImage src={`https://api.dicebear.com/7.x/notionists/svg?seed=${c.avatar}`} />
-                        <AvatarFallback>{c.userName?.[0] || 'U'}</AvatarFallback>
-                      </Avatar>
-                      <span className="text-sm font-medium">{c.userName}</span>
-                      <span className="text-xs text-muted-foreground">{c.createdAt}</span>
+                      {/* Render annotations overlay */}
+                      {activePage?.annotations?.map((ann: any, index: number) => (
+                        <div
+                          key={ann.id}
+                          style={{
+                            left: `${ann.x}%`,
+                            top: `${ann.y}%`,
+                          }}
+                          title={ann.body}
+                          className="absolute w-6 h-6 bg-yellow-500 text-black rounded-full flex items-center justify-center cursor-pointer -translate-x-1/2 -translate-y-1/2 text-xs font-bold shadow-lg border border-black"
+                        >
+                          {index + 1}
+                        </div>
+                      ))}
                     </div>
-                    <p className="text-sm text-muted-foreground">
-                      {c.body}
-                    </p>
+                  )}
+
+                  {/* Navigation controls */}
+                  {displayedPages.length > 0 && (
+                    <div className="flex items-center justify-between mt-4">
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => setCurrentPageIndex(Math.max(0, currentPageIndex - 1))}
+                        disabled={currentPageIndex === 0}
+                        className="border-zinc-800 text-zinc-300 hover:bg-zinc-800"
+                      >
+                        <ChevronLeft className="w-4 h-4 mr-1.5" />
+                        Trang trước
+                      </Button>
+                      <span className="text-zinc-400 text-xs">
+                        Trang <strong>{activePage?.number}</strong> trên {displayedPages.length} (Chương {activePage?.chapterNumber})
+                      </span>
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => setCurrentPageIndex(Math.min(displayedPages.length - 1, currentPageIndex + 1))}
+                        disabled={currentPageIndex === displayedPages.length - 1}
+                        className="border-zinc-800 text-zinc-300 hover:bg-zinc-800"
+                      >
+                        Trang sau
+                        <ChevronRight className="w-4 h-4 ml-1.5" />
+                      </Button>
+                    </div>
+                  )}
+                </CardContent>
+              </Card>
+
+              {/* Approval Buttons */}
+              {activePage && (
+                <Card className="bg-zinc-900 border-zinc-800 text-white">
+                  <CardContent className="p-4 flex items-center justify-between flex-wrap gap-4">
+                    <div className="flex items-center gap-3">
+                      <span className="text-xs text-zinc-400">Trạng thái hiện tại:</span>
+                      <Badge className={statusColors[activePage.status as keyof typeof statusColors] || "bg-zinc-800 text-zinc-300"}>
+                        {activePage.status}
+                      </Badge>
+                    </div>
+                    <div className="flex items-center gap-3">
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        className="border-orange-500/30 text-orange-400 hover:bg-orange-500/10"
+                        onClick={handleRequestRevision}
+                      >
+                        <X className="w-4 h-4 mr-1.5" />
+                        Yêu cầu sửa lại
+                      </Button>
+                      <Button
+                        size="sm"
+                        className="bg-green-600 hover:bg-green-500 text-white"
+                        onClick={handleApprovePage}
+                      >
+                        <Check className="w-4 h-4 mr-1.5" />
+                        Duyệt thông qua
+                      </Button>
+                    </div>
+                  </CardContent>
+                </Card>
+              )}
+            </div>
+
+            {/* Cột phải: Thumbnails & Bình luận */}
+            <div className="space-y-6">
+              {/* Grid Thumbnail trang */}
+              <Card className="bg-zinc-900 border-zinc-800 text-white">
+                <CardHeader className="pb-3">
+                  <CardTitle className="text-sm font-semibold text-zinc-300">Tổng quan trang</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="grid grid-cols-4 gap-2">
+                    {displayedPages.map((p, idx) => (
+                      <button
+                        key={p.id}
+                        onClick={() => setCurrentPageIndex(idx)}
+                        className={`aspect-[3/4] rounded border-2 transition-colors relative flex items-center justify-center text-xs font-semibold ${
+                          currentPageIndex === idx
+                            ? "border-primary bg-primary/10 text-white"
+                            : "border-zinc-850 bg-zinc-950 text-zinc-400 hover:border-zinc-700"
+                        }`}
+                      >
+                        {p.number}
+                        {p.status === "approved" && (
+                          <div className="absolute top-1 right-1 w-1.5 h-1.5 bg-green-500 rounded-full" />
+                        )}
+                        {p.hasAnnotations && (
+                          <div className="absolute bottom-1 right-1 w-1.5 h-1.5 bg-yellow-500 rounded-full" />
+                        )}
+                      </button>
+                    ))}
                   </div>
-                ))}
-                {(!page?.comments || page.comments.length === 0) && (
-                  <p className="text-xs text-muted-foreground text-center py-4">No comments for this page.</p>
-                )}
-              </div>
-              <div className="space-y-2">
-                <Textarea
-                  placeholder="Add a comment..."
-                  value={comment}
-                  onChange={(e) => setComment(e.target.value)}
-                  className="min-h-20"
-                />
-                <Button size="sm" className="w-full bg-primary text-primary-foreground">
-                  Post Comment
-                </Button>
-              </div>
-            </CardContent>
-          </Card>
+                </CardContent>
+              </Card>
+
+              {/* Comments Section */}
+              <Card className="bg-zinc-900 border-zinc-800 text-white">
+                <CardHeader className="pb-3">
+                  <CardTitle className="text-sm font-semibold text-zinc-300 flex items-center gap-2">
+                    <MessageSquare className="w-4 h-4 text-primary" />
+                    Bình Luận / Thảo Luận
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  {/* Chat feed */}
+                  <div className="space-y-3 max-h-[220px] overflow-y-auto pr-1 scrollbar-thin">
+                    {activePage?.comments?.map((c: any) => (
+                      <div key={c.id} className="p-3 bg-zinc-950/50 rounded-lg border border-zinc-850 text-xs">
+                        <div className="flex items-center justify-between mb-1">
+                          <div className="flex items-center gap-1.5">
+                            <Avatar className="w-5 h-5 shrink-0">
+                              <AvatarImage src={`https://api.dicebear.com/7.x/notionists/svg?seed=${c.avatar}`} />
+                              <AvatarFallback>{c.userName?.[0] || "U"}</AvatarFallback>
+                            </Avatar>
+                            <span className="font-semibold text-zinc-200">{c.userName}</span>
+                          </div>
+                          <span className="text-[10px] text-zinc-500">{c.createdAt}</span>
+                        </div>
+                        <p className="text-zinc-400 leading-normal">{c.body}</p>
+                      </div>
+                    ))}
+                    {(!activePage?.comments || activePage.comments.length === 0) && (
+                      <div className="text-center py-6 text-zinc-600 text-xs">Chưa có bình luận nào cho trang này.</div>
+                    )}
+                  </div>
+
+                  {/* Input form */}
+                  {activePage && (
+                    <div className="space-y-2 pt-2 border-t border-zinc-850">
+                      <Textarea
+                        placeholder="Thêm ý kiến thảo luận..."
+                        value={comment}
+                        onChange={(e) => setComment(e.target.value)}
+                        className="bg-zinc-950 border-zinc-850 text-xs text-white min-h-[60px]"
+                      />
+                      <Button
+                        size="sm"
+                        onClick={handlePostComment}
+                        className="w-full bg-primary hover:bg-primary/95 text-white font-medium text-xs py-1.5"
+                      >
+                        Gửi bình luận
+                      </Button>
+                    </div>
+                  )}
+                </CardContent>
+              </Card>
+            </div>
+          </div>
         </div>
-      </div>
+      )}
     </div>
   )
 }

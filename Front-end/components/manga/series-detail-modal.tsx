@@ -180,7 +180,7 @@ export function SeriesDetailModal({ seriesId, isOpen, onClose, onUpdate }: Serie
                   ) : (
                     <div className="text-center p-4">
                       <BookOpen className="w-12 h-12 text-zinc-600 mx-auto mb-2" />
-                      <span className="text-xs text-zinc-500">No cover image</span>
+                      <span className="text-xs text-zinc-500">Chưa có ảnh bìa</span>
                     </div>
                   )}
 

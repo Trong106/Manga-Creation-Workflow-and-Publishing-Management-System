@@ -53,7 +53,7 @@ public class ChapterService : IChapterService
             ChapterId = Guid.NewGuid(),
             SeriesId = seriesId,
             ChapterNumber = dto.ChapterNumber,
-            Title = dto.Title,
+            Title = dto.Title ?? string.Empty,
             Status = "draft",
             DueDate = dto.DueDate.HasValue ? DateOnly.FromDateTime(dto.DueDate.Value) : null,
             CreatedAt = DateTime.UtcNow,

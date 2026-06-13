@@ -1,32 +1,28 @@
 "use client"
 
-import { MoreHorizontal, Star, Users } from "lucide-react"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Button } from "@/components/ui/button"
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
-import { Badge } from "@/components/ui/badge"
-import { Progress } from "@/components/ui/progress"
 import { useState, useEffect } from "react"
+import { Star, Eye, Bookmark, FileText, BookOpen } from "lucide-react"
+import { Card, CardContent } from "@/components/ui/card"
+import { Badge } from "@/components/ui/badge"
 import { API_BASE_URL } from "@/lib/api-config"
-
-// Removed hardcoded mock projects array in favor of dynamic backend database mapping.
-
-const statusColors: Record<string, string> = {
-  ongoing: "bg-blue-500/20 text-blue-400",
-  completed: "bg-green-500/20 text-green-400",
-  planning: "bg-yellow-500/20 text-yellow-400",
-}
+import { SeriesDetailModal } from "./series-detail-modal"
 
 export function ProjectList() {
   const [projects, setProjects] = useState<any[]>([])
   const [loading, setLoading] = useState(true)
+  const [selectedSeriesId, setSelectedSeriesId] = useState<string | null>(null)
+  const [isModalOpen, setIsModalOpen] = useState(false)
 
-  useEffect(() => {
+  const fetchSeries = () => {
     fetch(`${API_BASE_URL}/api/data/series`)
       .then((res) => res.json())
       .then((data) => {
         if (Array.isArray(data)) {
-          setProjects(data)
+          // Sắp xếp theo thứ tự cập nhật mới nhất đến cũ nhất cho mục "Danh Sách Truyện Tranh Mới"
+          const sorted = [...data].sort(
+            (a, b) => new Date(b.updatedAtRaw).getTime() - new Date(a.updatedAtRaw).getTime()
+          )
+          setProjects(sorted)
         }
         setLoading(false)
       })
@@ -34,43 +30,12 @@ export function ProjectList() {
         console.error("Error fetching projects:", err)
         setLoading(false)
       })
+  }
+
+  useEffect(() => {
+    fetchSeries()
   }, [])
 
-<<<<<<< Updated upstream
-  return (
-    <Card className="bg-card border-border mt-8">
-      <CardHeader>
-        <div className="flex items-center justify-between">
-          <CardTitle>Active Projects</CardTitle>
-          <Button variant="outline" size="sm">View All</Button>
-        </div>
-      </CardHeader>
-      <CardContent>
-        {loading ? (
-          <div className="text-center py-8 text-zinc-400">Loading active series...</div>
-        ) : projects.length === 0 ? (
-          <div className="text-center py-8 text-zinc-400">No active series found.</div>
-        ) : (
-          <div className="space-y-4">
-            {projects.map((project) => (
-            <div 
-              key={project.id} 
-              className="flex items-center gap-4 p-4 rounded-lg bg-secondary hover:bg-secondary/80 transition-colors cursor-pointer"
-            >
-              <div className={`w-12 h-16 rounded-lg bg-gradient-to-br ${project.color} flex items-center justify-center flex-shrink-0`}>
-                <span className="text-white font-bold text-lg">{project.title[0]}</span>
-              </div>
-              <div className="flex-1 min-w-0">
-                <div className="flex items-center gap-2">
-                  <h4 className="font-semibold truncate">{project.title}</h4>
-                  {project.starred && <Star className="w-4 h-4 text-yellow-500 fill-yellow-500" />}
-                  <Badge className={statusColors[project.status]}>{project.status}</Badge>
-                </div>
-                <p className="text-sm text-muted-foreground">{project.genre} • {project.chapters} chapters</p>
-                <div className="flex items-center gap-4 mt-2">
-                  <div className="flex-1 max-w-32">
-                    <Progress value={project.progress} className="h-1.5" />
-=======
   const getFullCoverUrl = (coverPath?: string) => {
     if (!coverPath) return ""
     if (coverPath.startsWith("http")) return coverPath
@@ -89,28 +54,23 @@ export function ProjectList() {
     const diffHours = Math.floor(diffMins / 60)
     const diffDays = Math.floor(diffHours / 24)
 
-    if (diffMins < 60) {
-      const mins = diffMins || 1
-      return `${mins} ${mins === 1 ? "minute" : "minutes"} ago`
-    }
-    if (diffHours < 24) {
-      return `${diffHours} ${diffHours === 1 ? "hour" : "hours"} ago`
-    }
-    return `${diffDays} ${diffDays === 1 ? "day" : "days"} ago`
+    if (diffMins < 60) return `${diffMins || 1} phút trước`
+    if (diffHours < 24) return `${diffHours} giờ trước`
+    return `${diffDays} ngày trước`
   }
 
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <h2 className="text-xl font-bold text-white flex items-center gap-2">
-          📖 New Releases
+          📖 Danh Sách Truyện Tranh Mới
         </h2>
       </div>
 
       {loading ? (
-        <div className="text-center py-12 text-zinc-400 text-sm">Loading new releases...</div>
+        <div className="text-center py-12 text-zinc-400 text-sm">Đang tải danh sách truyện tranh mới...</div>
       ) : projects.length === 0 ? (
-        <div className="text-center py-12 text-zinc-400 text-sm">No new releases found.</div>
+        <div className="text-center py-12 text-zinc-400 text-sm">Không tìm thấy truyện tranh mới nào.</div>
       ) : (
         <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-5">
           {projects.map((project) => {
@@ -133,7 +93,7 @@ export function ProjectList() {
                   ) : (
                     <div className="text-center p-4">
                       <BookOpen className="w-8 h-8 text-zinc-700 mx-auto mb-1" />
-                      <span className="text-[10px] text-zinc-500">No cover</span>
+                      <span className="text-[10px] text-zinc-500">Chưa có ảnh</span>
                     </div>
                   )}
 
@@ -154,42 +114,31 @@ export function ProjectList() {
                     {project.title}
                   </h4>
                   <div className="flex items-center justify-between text-xs text-zinc-400">
-                    <span>Chapter {project.chapters ?? 0}</span>
+                    <span>Chương {project.chapters ?? 0}</span>
                     <span className="flex items-center gap-0.5 text-[10px] text-zinc-500">
                       <Eye className="w-3 h-3" />
                       {project.readerCount >= 1000 ? `${(project.readerCount / 1000).toFixed(1)}k` : project.readerCount}
                     </span>
->>>>>>> Stashed changes
-                  </div>
-                  <span className="text-xs text-muted-foreground">{project.progress}%</span>
-                </div>
-              </div>
-              <div className="flex items-center gap-2">
-                <div className="flex items-center">
-                  <Users className="w-4 h-4 text-muted-foreground mr-2" />
-                  <div className="flex -space-x-2">
-                    {project.team.slice(0, 3).map((member: string) => (
-                      <Avatar key={member} className="w-6 h-6 border-2 border-card">
-                        <AvatarImage src={`https://api.dicebear.com/7.x/notionists/svg?seed=${member}`} />
-                        <AvatarFallback>{member[0].toUpperCase()}</AvatarFallback>
-                      </Avatar>
-                    ))}
-                    {project.team.length > 3 && (
-                      <div className="w-6 h-6 rounded-full bg-muted flex items-center justify-center text-xs border-2 border-card">
-                        +{project.team.length - 3}
-                      </div>
-                    )}
                   </div>
                 </div>
-                <Button variant="ghost" size="icon" className="w-8 h-8">
-                  <MoreHorizontal className="w-4 h-4" />
-                </Button>
               </div>
-            </div>
-            ))}
-          </div>
-        )}
-      </CardContent>
-    </Card>
+            )
+          })}
+        </div>
+      )}
+
+      {/* Series Detail Modal */}
+      {selectedSeriesId && (
+        <SeriesDetailModal
+          seriesId={selectedSeriesId}
+          isOpen={isModalOpen}
+          onClose={() => {
+            setIsModalOpen(false)
+            setSelectedSeriesId(null)
+          }}
+          onUpdate={fetchSeries}
+        />
+      )}
+    </div>
   )
 }

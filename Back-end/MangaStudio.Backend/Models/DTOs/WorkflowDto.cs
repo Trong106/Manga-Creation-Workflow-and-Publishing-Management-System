@@ -63,7 +63,9 @@ public class PayrollDto
     public string AssistantName { get; set; } = null!;
     public DateOnly PeriodStart { get; set; }
     public DateOnly PeriodEnd { get; set; }
-    public decimal TotalHours { get; set; }
+    public decimal BaseAmount { get; set; }
+    public decimal BonusAmount { get; set; }
+    public decimal DeductionAmount { get; set; }
     public decimal TotalAmount { get; set; }
     public string Status { get; set; } = null!;
     public DateTime? PaidAt { get; set; }

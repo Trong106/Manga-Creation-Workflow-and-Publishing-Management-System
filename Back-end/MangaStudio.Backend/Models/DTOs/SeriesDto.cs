@@ -50,5 +50,6 @@ public class UpdateSeriesDto
 
     public string? Synopsis { get; set; }
     public string? Status { get; set; }
+    public string? CoverImageUrl { get; set; }
     public List<string>? Genres { get; set; }
 }

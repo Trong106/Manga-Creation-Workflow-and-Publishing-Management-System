@@ -111,7 +111,7 @@ public class SeriesController : ControllerBase
         {
             return NotFound(new { message = ex.Message });
         }
-        catch (UnauthorizedAccessException ex)
+        catch (UnauthorizedAccessException)
         {
             return Forbid();
         }
@@ -161,7 +161,58 @@ public class SeriesController : ControllerBase
         {
             return BadRequest(new { message = ex.Message });
         }
-        catch (UnauthorizedAccessException ex)
+        catch (UnauthorizedAccessException)
+        {
+            return Forbid();
+        }
+        catch (Exception ex)
+        {
+            return StatusCode(500, new { message = ex.Message });
+        }
+    }
+
+    /// <summary>
+    /// POST /api/series/{id}/upload-cover — Tải lên ảnh bìa cho bộ truyện.
+    /// </summary>
+    [HttpPost("{id:guid}/upload-cover")]
+    [Authorize(Roles = "mangaka")]
+    public async Task<IActionResult> UploadCover(Guid id, IFormFile file)
+    {
+        if (file == null || file.Length == 0)
+        {
+            return BadRequest("File không hợp lệ hoặc trống.");
+        }
+
+        try
+        {
+            var mangakaId = GetCurrentUserId();
+            
+            // Lưu file vào thư mục Uploads
+            string uploadsFolder = System.IO.Path.Combine(System.IO.Directory.GetCurrentDirectory(), "Uploads");
+            if (!System.IO.Directory.Exists(uploadsFolder))
+                System.IO.Directory.CreateDirectory(uploadsFolder);
+
+            string fileName = Guid.NewGuid().ToString() + System.IO.Path.GetExtension(file.FileName);
+            string filePath = System.IO.Path.Combine(uploadsFolder, fileName);
+
+            using (var fileStream = new System.IO.FileStream(filePath, System.IO.FileMode.Create))
+            {
+                await file.CopyToAsync(fileStream);
+            }
+
+            var coverUrl = "/Uploads/" + fileName;
+
+            // Cập nhật CoverImageUrl thông qua service
+            var dto = new UpdateSeriesDto { CoverImageUrl = coverUrl };
+            var result = await _seriesService.UpdateSeries(id, mangakaId, dto);
+
+            return Ok(result);
+        }
+        catch (KeyNotFoundException ex)
+        {
+            return NotFound(new { message = ex.Message });
+        }
+        catch (UnauthorizedAccessException)
         {
             return Forbid();
         }
