@@ -126,12 +126,6 @@ const navItems: NavItem[] = [
     roles: ["mangaka"],
   },
   {
-    title: "AI Tools",
-    href: "/ai-tools",
-    icon: Sparkles,
-    roles: ["mangaka"],
-  },
-  {
     title: "Submit to Publish",
     href: "/publish/submit",
     icon: FileText,

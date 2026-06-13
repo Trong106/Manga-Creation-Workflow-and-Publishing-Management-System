@@ -10,7 +10,7 @@ import { API_BASE_URL } from "@/lib/api-config"
 import { SeriesDetailModal } from "@/components/manga/series-detail-modal"
 import { BookOpen, Star, Eye, Bookmark, TrendingUp } from "lucide-react"
 
-// Định nghĩa danh sách tính năng theo từng vai trò như Toàn yêu cầu
+// Định nghĩa danh sách tính năng theo từng vai trò 
 const ROLE_INFO: Record<string, { name: string; desc: string; metrics: { title: string; val: string; change: string; icon: string }[] }> = {
   mangaka: {
     name: 'Yuki Tanaka (Mangaka)',
